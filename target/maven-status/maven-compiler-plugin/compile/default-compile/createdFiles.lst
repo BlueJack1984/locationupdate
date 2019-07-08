@@ -1,11 +1,9 @@
 com\packer\commons\sms\SmsException.class
 nu\xom\jaxen\expr\IdentitySet$IdentityWrapper.class
-nu\xom\jaxen\expr\DefaultLogicalExpr.class
 com\packer\commons\sms\packet\FieldsTree.class
 nu\xom\jaxen\expr\DefaultLocationPath.class
 com\iot\otaBean\manufacturerEnmu\ManufacturerEnmu$ManufacturerProductType.class
 nu\xom\jaxen\expr\DefaultAdditiveExpr.class
-nu\xom\jaxen\expr\LogicalExpr.class
 com\packer\commons\sms\platformapp\impl\DefaultPlatFormPacketConstructor.class
 nu\xom\jaxen\expr\DefaultUnionExpr.class
 nu\xom\ISOCyrillicWriter.class
@@ -13,13 +11,11 @@ nu\xom\IllegalNameException.class
 nu\xom\jaxen\expr\DefaultDivExpr.class
 nu\xom\jaxen\expr\MultiplicativeExpr.class
 nu\xom\jaxen\expr\PredicateSet.class
-nu\xom\Verifier.class
 com\iot\otaBean\manufacturerEnmu\ManufacturerEnmu$ManufacturerKeyType.class
 nu\xom\Latin7Writer.class
 nu\xom\Latin9Writer.class
 nu\xom\Latin8Writer.class
 nu\xom\NonVerifyingHandler.class
-nu\xom\Elements.class
 com\packer\extension\valuesource\MacValueSource.class
 nu\xom\jaxen\function\ContainsFunction.class
 com\iot\otaBean\orderSys\selectLocalSoftSimResponse\RespData.class
@@ -28,10 +24,8 @@ com\iot\otaBean\mccBitMap\MccBitMap.class
 nu\xom\jaxen\expr\LiteralExpr.class
 nu\xom\jaxen\expr\CommentNodeStep.class
 com\packer\commons\sms\lang\ByteUtil.class
-com\iot\util\ResourceUtil.class
 nu\xom\jaxen\expr\DefaultEqualsExpr.class
 nu\xom\jaxen\expr\DefaultLiteralExpr.class
-com\iot\service\interfaces\BipMsgHandleService.class
 com\iot\dao\assetOrderSoftsimUsageDao\IAssetOrderSoftsimUsageDao.class
 com\packer\commons\sms\packet\IAutoCascadeManager.class
 nu\xom\jaxen\expr\FilterExpr.class
@@ -39,11 +33,9 @@ nu\xom\JaxenNavigator$ChildIterator.class
 nu\xom\jaxen\expr\DefaultPlusExpr.class
 com\packer\commons\sms\packet\DataManager.class
 nu\xom\jaxen\util\SelfAxisIterator.class
-com\packer\commons\sms\exception\EncodeException.class
 com\iot\util\JsonUtil.class
 nu\xom\jaxen\util\FollowingSiblingAxisIterator.class
 nu\xom\jaxen\function\FalseFunction.class
-nu\xom\jaxen\function\LastFunction.class
 com\packer\commons\sms\mapping\impl\XMLClassPathParser.class
 nu\xom\jaxen\expr\DefaultArithExpr.class
 nu\xom\jaxen\expr\DefaultLessThanExpr.class
@@ -67,7 +59,6 @@ nu\xom\jaxen\expr\DefaultAbsoluteLocationPath.class
 com\packer\commons\sms\packet\type\IValueType.class
 nu\xom\jaxen\expr\DefaultProcessingInstructionNodeStep.class
 com\packer\commons\sms\platformapp\impl\PropertyChain.class
-com\iot\controller\BipController.class
 com\packer\commons\sms\packet\DefaultChannelManager.class
 nu\xom\UnavailableCharacterException.class
 com\iot\systemInit\SystemInit.class
@@ -77,7 +68,6 @@ nu\xom\jaxen\expr\Step.class
 com\iot\otaBean\mo\RecieveDataPorMo.class
 nu\xom\jaxen\expr\DefaultModExpr.class
 nu\xom\jaxen\expr\iter\IterablePrecedingAxis.class
-com\iot\otaBean\softSimResourceInfo\SoftSimResourceInfo.class
 nu\xom\jaxen\function\ext\EvaluateFunction.class
 nu\xom\jaxen\util\PrecedingAxisIterator.class
 com\packer\commons\sms\platformapp\IExchanger.class
@@ -86,7 +76,6 @@ nu\xom\jaxen\expr\DefaultMultiplyExpr.class
 nu\xom\jaxen\expr\iter\IterableDescendantAxis.class
 com\iot\service\serviceImpl\USSDPackServiceImpl.class
 nu\xom\TextWriterFactory.class
-nu\xom\jaxen\QualifiedName.class
 com\packer\commons\sms\packet\valuesource\PacketCommandValueSource.class
 nu\xom\ParsingException.class
 nu\xom\JaxenNavigator$NamedChildIterator.class
@@ -104,14 +93,10 @@ nu\xom\ParentNode.class
 com\iot\util\StrUtils.class
 com\iot\otaBean\assetOrder\AssetOrder.class
 nu\xom\ISOArabicWriter.class
-nu\xom\UCSWriter.class
 nu\xom\GenericWriter.class
-com\iot\otaBean\mt\PlainDataMt.class
 com\packer\commons\sms\util\Assert.class
 nu\xom\jaxen\function\StringLengthFunction.class
-nu\xom\IllegalCharacterDataException.class
 com\iot\service\interfaces\SelectNumberService.class
-com\iot\util\HexStr.class
 nu\xom\jaxen\expr\RelationalExpr.class
 nu\xom\jaxen\expr\DefaultRelativeLocationPath.class
 nu\xom\jaxen\expr\DefaultLessThanEqualExpr.class
@@ -125,7 +110,6 @@ com\packer\commons\sms\packet\IPacketConstructor.class
 nu\xom\jaxen\expr\UnaryExpr.class
 nu\xom\jaxen\expr\DefaultVariableReferenceExpr.class
 nu\xom\jaxen\expr\DefaultGreaterThanEqualExpr.class
-com\iot\otaBean\mt\CmdParamData.class
 com\iot\otaBean\smsTypeEnum\SmsTypeEnum.class
 nu\xom\jaxen\function\FloorFunction.class
 nu\xom\Comment.class
@@ -173,17 +157,14 @@ com\packer\commons\sms\serialize\SerializerException.class
 nu\xom\jaxen\function\StartsWithFunction.class
 com\iot\service\serviceImpl\SelectOrderServiceImpl.class
 com\packer\commons\sms\packet\type\LVValueType.class
-com\iot\service\interfaces\USSDPackService.class
 nu\xom\jaxen\function\IdFunction.class
 nu\xom\jaxen\function\ext\LocaleFunctionSupport.class
-com\iot\service\interfaces\USSDUnpackService.class
 com\iot\constant\SysConstants.class
 com\packer\commons\sms\lang\ByteUtil$ByteOrder.class
 com\packer\commons\sms\packet\parser\HandleResult.class
 com\packer\commons\sms\packet\valuesource\MacValueSourceException.class
 nu\xom\XPathContext$1.class
 nu\xom\jaxen\Navigator.class
-com\packer\commons\sms\platformapp\IObjectPropertyExchanger.class
 nu\xom\jaxen\util\AncestorAxisIterator.class
 com\packer\commons\sms\crypto\LF3DesCryptoUtil.class
 nu\xom\Builder$1.class
@@ -195,10 +176,8 @@ nu\xom\jaxen\expr\DefaultMinusExpr.class
 com\packer\commons\sms\packet\PacketChannel.class
 nu\xom\jaxen\expr\iter\IterableAttributeAxis.class
 nu\xom\URIUtil$ParsedURI.class
-nu\xom\IllegalDataException.class
 nu\xom\jaxen\UnsupportedAxisException.class
 com\packer\commons\sms\packet\ValueSourceException.class
-nu\xom\ProcessingInstruction.class
 com\iot\util\mail\ExceptionEmailUtil.class
 com\iot\util\SSLClient$1.class
 nu\xom\jaxen\expr\IdentitySet.class
@@ -220,7 +199,6 @@ nu\xom\NoSuchAttributeException.class
 nu\xom\jaxen\function\SumFunction.class
 com\iot\dao\assetManageBusiDao\IAssetManageBusiDao.class
 nu\xom\Latin4Writer.class
-com\packer\commons\sms\util\CollectionUtil.class
 com\packer\commons\sms\packet\AutoCascadeException.class
 com\iot\service\interfaces\SelectOrderService.class
 nu\xom\jaxen\JaxenConstants.class
@@ -240,7 +218,6 @@ com\packer\commons\sms\mapping\impl\MappingException.class
 nu\xom\jaxen\expr\AllNodeStep.class
 nu\xom\jaxen\function\CeilingFunction.class
 nu\xom\jaxen\expr\DefaultAllNodeStep.class
-com\packer\commons\sms\mapping\impl\LoadCondition.class
 com\iot\util\b$eval_o.class
 com\packer\commons\sms\packet\ConstructResult.class
 nu\xom\jaxen\function\CountFunction.class
@@ -269,7 +246,6 @@ nu\xom\jaxen\expr\NameStep.class
 nu\xom\jaxen\expr\DefaultFilterExpr.class
 com\iot\otaBean\manufacturerEnmu\ManufacturerEnmu$ManufacturerDataType.class
 nu\xom\jaxen\expr\DefaultXPathExpr.class
-com\iot\otaBean\mt\MtData.class
 nu\xom\jaxen\expr\Expr.class
 com\packer\commons\sms\jce\JceBase$Padding.class
 com\packer\commons\sms\packet\AutoLoadPacketData.class
@@ -294,7 +270,6 @@ nu\xom\jaxen\expr\UnionExpr.class
 com\iot\otaBean\supplier\Supplier.class
 nu\xom\jaxen\expr\iter\IterableChildAxis.class
 nu\xom\jaxen\util\SingleObjectIterator.class
-nu\xom\jaxen\function\TrueFunction.class
 nu\xom\jaxen\expr\iter\IterableParentAxis.class
 com\iot\dao\softSimResourceImsiDao\ISoftSimResourceImsiDao.class
 nu\xom\jaxen\expr\FunctionCallExpr.class
@@ -304,8 +279,6 @@ nu\xom\jaxen\expr\DefaultXPathFactory.class
 com\iot\otaBean\manufacturerEnmu\ManufacturerEnmu.class
 com\packer\commons\sms\ClassPathXMLSmsFactory.class
 nu\xom\jaxen\util\DescendantAxisIterator.class
-nu\xom\jaxen\function\StringFunction.class
-com\iot\otaBean\primaryResourceNumber\PrimaryResourceNumber.class
 nu\xom\jaxen\expr\DefaultFunctionCallExpr.class
 com\packer\commons\sms\lang\Assert.class
 nu\xom\Node.class
@@ -361,7 +334,6 @@ com\iot\otaBean\assetManageBusi\AssetManageBusi.class
 nu\xom\DocType.class
 com\packer\commons\sms\mapping\XMLConfig.class
 com\packer\commons\sms\packet\parser\IControlFieldsHandler.class
-com\iot\otaBean\assetManageBusiTypeEnum\AssetManageBusiTypeEnum.class
 com\packer\commons\sms\serialize\TemplateUtil.class
 nu\xom\jaxen\expr\iter\IterableAncestorOrSelfAxis.class
 nu\xom\jaxen\FunctionCallException.class

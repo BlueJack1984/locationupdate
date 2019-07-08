@@ -1,6 +1,6 @@
 package com.iot.service.serviceImpl;
 
-import com.iot.dao.preStartOrderRecord.PreStartOrderRecordDao;
+import com.iot.dao.preStartOrderRecord.IPreStartOrderRecordDao;
 import com.iot.otaBean.preStartOrderRecord.PreStartOrderRecord;
 import com.iot.service.interfaces.PreStartOrderService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class PreStartOrderServiceImpl implements PreStartOrderService {
 
-    private final PreStartOrderRecordDao preStartOrderRecordDao;
+    private final IPreStartOrderRecordDao preStartOrderRecordDao;
     /**
      *
      * @param iccid

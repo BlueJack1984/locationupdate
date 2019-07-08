@@ -2,7 +2,6 @@ package com.iot.service.serviceImpl;
 
 import com.iot.constant.SysConstants;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
-import com.iot.dao.assetOrderDao.IAssetOrderDao;
 import com.iot.dao.assetOrderSoftsimUsageDao.IAssetOrderSoftsimUsageDao;
 import com.iot.dao.primaryResourceImsiDao.IPrimaryResourceImsiDao;
 import com.iot.dao.primaryResourceNumberDao.IPrimaryResourceNumberDao;
@@ -13,7 +12,7 @@ import com.iot.otaBean.assetOrder.AssetOrder;
 import com.iot.otaBean.assetOrderSoftsimUsage.AssetOrderSoftsimUsage;
 import com.iot.otaBean.cmdTypeEnum.CmdTypeEnum;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
-import com.iot.otaBean.luInformation.LUInformation;
+import com.iot.otaBean.mo.LUMo;
 import com.iot.otaBean.mo.PositionMo;
 import com.iot.otaBean.mt.CmdParamData;
 import com.iot.otaBean.mt.MtData;
@@ -427,16 +426,98 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             return null;
         }
         PlainDataMt plainDataMt = getAccessoryNumberObj(assetOrder, tradeNo, softSimResourceInfos.get(0),
-                new PositionMo(), simImsi, deviceInitRec);
+                new LUMo(), simIccid, simImsi);
         return plainDataMt;
     }
 
     /**
-     * 获取副号
+     * 旅游卡获取副号
      */
-    private PlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, LUInformation luInformation, String simImsi) {
+    private PlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, LUMo luInformation, String iccid, String imsi) throws Exception{
+        String UssdPre = "";
+        String plmn = "";
         PlainDataMt plainDataMt = new PlainDataMt();
-        assetOrder.getPlannedEndTime();
+        CmdParamData cmdParamData = new CmdParamData();
+        cmdParamData.setOtaTradeNo(tradeNo);
+        cmdParamData.setOldIccid(null);
+        cmdParamData.setNewIccid(iccid);
+        cmdParamData.setpIccid(null);
+        cmdParamData.setImsi(ResourceUtil.getEfImsi(softSimResourceInfo,imsi));
+        cmdParamData.setDataKeyIndex(null);
+        cmdParamData.setCallControl(softSimResourceInfo.getCallFlag());
+        List<SoftSimResourceImsi> softSimResourceImsis = softSimResourceImsiDao.querySoftsimResourceImsi(
+                softSimResourceInfo.getIccid(), imsi);
+        if(1 != softSimResourceImsis.size()){
+            logger.error("iccid为"+softSimResourceInfo.getIccid()+"imsi为"+imsi+"的主号多于一个或者不存在！");
+            return null;
+        }
+        SoftSimResourceImsi softSimResourceImsi = softSimResourceImsis.get(0);
+        cmdParamData.setAlgFlag(StringUtil.paddingHeadZero(softSimResourceImsi.getAlgFlag(),2));
+        //USSD prefix
+        Supplier supplier = supplierDao.querySupplierByCode(softSimResourceInfo.getSupplierCode());
+        if(!StringHelper.isEmpty(supplier.getUssdPre())){
+            UssdPre = supplier.getUssdPre();
+        }
+        UssdPre = StringUtil.paddingTailZero(StringUtil.asc2hex(UssdPre), 36);
+        cmdParamData.setUssdPrefix(UssdPre);
+        if(!StringHelper.isEmpty(softSimResourceImsi.getPlmn())){
+            if(softSimResourceImsi.getPlmn().length()> SysConstants.MAX_MAIN_PLMN_FIRST_LENGTH){
+                plmn = softSimResourceImsi.getPlmn().substring(0,SysConstants.MAX_MAIN_PLMN_FIRST_LENGTH);
+            }else{
+                plmn = StringUtil.paddingTail(softSimResourceImsi.getPlmn(), SysConstants.MAX_MAIN_PLMN_FIRST_LENGTH, "FF");
+            }
+        }else{
+            plmn="";
+        }
+        cmdParamData.setPlmn(ResourceUtil.generatePLMNIndexList(plmn, softSimResourceImsi.getCoverCountry()));
+        String dataKeyIndex = "0" + (new Random().nextInt(5) + 1);
+        cmdParamData.setDataKeyIndex(dataKeyIndex);
+        String deKI = KeyUtil.decryptKIorOPC(
+                Integer.parseInt(softSimResourceInfo.getKeyIndex()),
+                softSimResourceInfo.getKi()).substring(0, 32);
+        String deOPC = KeyUtil.decryptKIorOPC(
+                Integer.parseInt(softSimResourceInfo.getKeyIndex()),
+                softSimResourceInfo.getOpc()).substring(0, 32);
+//        String sessionKey = ResourceUtil
+//                .calcSessionKey(SysConstants.PERS_DATA_KEY.get(positionMo
+//                                .getManuFlag())[Integer.parseInt(dataKeyIndex) - 1],
+//                        positionMo.getpIccid(), tradeNo);//首次更新
+//        String keyData = LF3DesCryptoUtil.ecb_encrypt(sessionKey, deKI + deOPC,
+//                JceBase.Padding.NoPadding);
+//        cmdParamData.setKeyData(keyData);
+        //在这里添加副号的过期时间
+        String expTime = "";
+        if(assetOrder.getPlannedEndTime() != null && assetOrder.getPlannedEndTime().trim().length() > 0) {
+            expTime = assetOrder.getPlannedEndTime().replaceAll("-", "")
+                    .replaceAll(":", "").replaceAll(" ", "");
+        }else {
+            logger.info("订单预计结束时间为空");
+        }
+        cmdParamData.setExpTime(StringUtil.string2ADN(expTime));
+        cmdParamData.setCoverMcc(softSimResourceImsi.getCoverCountry());
+        cmdParamData.setApn(softSimResourceInfo.getApn());
+        //String[] bipIps = deviceInitRec.getBipIp().split("\\.");
+//        String cmdParam = StringUtil.paddingHeadZero(Integer.toString(deviceInitRec.getRepeatReportRate().intValue(), 16), 2)
+//                +StringUtil.paddingHeadZero(Integer.toString(deviceInitRec.getRetryCount().intValue(),16),2)
+//                +StringUtil.paddingHeadZero(Integer.toString(deviceInitRec.getReportRegularlyRate().intValue(),16),4)
+//                +Integer.toHexString(Integer.parseInt(bipIps[0]))
+//                +Integer.toHexString(Integer.parseInt(bipIps[1]))
+//                +Integer.toHexString(Integer.parseInt(bipIps[2]))
+//                +Integer.toHexString(Integer.parseInt(bipIps[3]))
+//                +Integer.toHexString(deviceInitRec.getBipPort().intValue());
+//        cmdParamData.setBipParam(cmdParam);
+        cmdParamData.setFplmn(softSimResourceImsi.getFplmn());
+        cmdParamData.setSca(softSimResourceInfo.getSca());
+        if("0".equals(softSimResourceInfo.getTelecommunicationsFlag())){
+            cmdParamData.setTelData("");
+        }else {
+            //cmdParamData.setTelData();
+        }
+        String cmdStr = JsonUtil.getJSONString(cmdParamData);
+        plainDataMt.setCmdParams(cmdParamData);
+        plainDataMt.setCmdType(CmdTypeEnum.LOCALDATA_POR
+                .getCmdType());
+        plainDataMt.setCmdLength(String.valueOf(cmdStr.length()));
         return plainDataMt;
     }
 }

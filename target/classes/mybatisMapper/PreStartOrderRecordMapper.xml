@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.IAssetSoftsimUsageDao.IAssetSoftsimUsageDao">
+	<sql id="c_pre_start_order_record_t">
+		_pre_start_order_record_t.id, _pre_start_order_record_t.iccid,
+		_pre_start_order_record_t.imsi, _pre_start_order_record_t.order_id orderId,
+		_pre_start_order_record_t.accessory_imsi accessoryImsi, _pre_start_order_record_t.start_time startTime,
+		_pre_start_order_record_t.expected_finish_time expectedFinishTime,
+		_pre_start_order_record_t.status, _pre_start_order_record_t.create_time createTime,
+		_pre_start_order_record_t.update_time updateTime
+	</sql>
+
+	<sql id="t_pre_start_order_record_t">
+		pre_start_order_record_t
+	</sql>
+	<insert id="insert" parameterType="com.iot.otaBean.preStartOrderRecord.PreStartOrderRecord">
+		insert into <include refid="c_pre_start_order_record_t"/>
+		(id, iccid, imsi, order_id, accessory_imsi, start_time,
+		expected_finish_time, status, create_time, update_time)
+		values(#{preStartOrderRecord.id}, #{preStartOrderRecord.iccid},
+		#{preStartOrderRecord.imsi}, #{preStartOrderRecord.orderId},
+		#{preStartOrderRecord.accessoryImsi},#{preStartOrderRecord.startTime},
+		#{preStartOrderRecord.expectedFinishTime}, #{preStartOrderRecord.status},
+		#{preStartOrderRecord.createTime},#{preStartOrderRecord.updateTime})
+	</insert>
+</mapper>    
+    
+  

@@ -15,11 +15,11 @@
 		WHERE  `asset_id` =#{deviceInitRec.imei} AND iccid=#{deviceInitRec.seedIccid}
 		AND `soft_sim_type` = '1';
 
-		INSERT INTO `asset_softsim_usage_t` (
+		INSERT INTO `asset_softsim_usage_t`(
 		`asset_id`,`iccid`,`imsi`,`status`,`create_date`,`cover_mcc`,`operator_code`,
 		`operator_name`,`supplier_code`,`supplier_name`,`multi_imsi_flag`,`soft_sim_type`
 		)VALUES(
-		#{deviceInitRec.imei},#{deviceInitRec.iccid},#{deviceInitRec.imsi},'1',NOW(),#{coverMcc},#{deviceInitRec.operatorCode},
+		#{deviceInitRec.imei},#{deviceInitRec.iccid},#{deviceInitRec.imsi},'1',date_format(NOW(), '%Y-%m-%d %H:%i:%s'),#{coverMcc},#{deviceInitRec.operatorCode},
 		#{deviceInitRec.operatorName},#{deviceInitRec.supplierCode},#{deviceInitRec.supplierName},#{moreImsiFlag},
 		'2');
 	</update>

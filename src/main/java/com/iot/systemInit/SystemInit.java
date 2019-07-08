@@ -10,7 +10,7 @@ import com.iot.ota.dao.interf.IMccBitMapDao;
 import com.iot.ota.jmsQueue.MoMsgConsumer;
 import com.iot.ota.util.StaticLoggerUtils;*/
 import com.iot.constant.SysConstants;
-import com.iot.dao.IPmnIndexDao.IPlmnIndexDao;
+import com.iot.dao.IPlmnIndexDao.IPlmnIndexDao;
 import com.iot.dao.manufacturerKeyDao.IManufacturerKeyDao;
 import com.iot.dao.mccBitMapDao.IMccBitMapDao;
 import com.iot.otaBean.manufacturerEnmu.ManufacturerEnmu;
@@ -18,14 +18,12 @@ import com.iot.otaBean.manufacturerKey.ManufacturerKey;
 import com.iot.otaBean.mccBitMap.MccBitMap;
 import com.iot.otaBean.plmn.PlmnIndex;
 import com.iot.util.KeyUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -12,4 +12,8 @@ public interface IAssetSoftsimUsageDao {
                                 @Param("otaTradeNo")String otaTradeNo,
                                 @Param("moreImsiFlag")String moreImsiFlag,
                                 @Param("coverMcc")String coverMcc);
+
+    /**
+     * 根据imsi获取设备码号表数据集合
+     */
 }

@@ -1,11 +1,9 @@
 package com.iot.controller;
 
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
-import com.iot.dao.deviceInitRecDao.IDeviceInitRecDao;
-import com.iot.io.request.LUInput;
+import com.iot.otaBean.io.request.LUInput;
 import com.iot.otaBean.assetOrder.AssetOrder;
 import com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage;
-import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction;
 import com.iot.otaBean.mt.MtData;
 import com.iot.otaBean.mt.PlainDataMt;
@@ -46,9 +44,9 @@ public class LUController {
     private final IAssetManageBusiDao assetManageBusiDao;
 
     @PostMapping("/luMsgHandle")
-    public String LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
+    public List<String> LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
-        String SMS = "";
+        List<String> SMS = new ArrayList<>();
         //查询location_position_instruction_t是否有写入下发要求
         List<LocationUpdateInstruction> instructionList = instructionService.getList();
         if(null != instructionList && instructionList.size() > 0) {
@@ -71,8 +69,9 @@ public class LUController {
             }
         }
         //根据iccid列表查出订单列表
-        String mcc = luInput.getMccmnc();
-        AssetOrder assetOrder = getByIccid(iccidList, mcc);
+        //mcc三位，mnc两位
+        String mcc = luInput.getMccmnc().substring(0, 3);
+        AssetOrder assetOrder = getByIccids(iccidList, mcc);
         if(null == assetOrder) {
             log.info("无法判断订单，不能下发副号");
             return null;
@@ -84,7 +83,15 @@ public class LUController {
         String expectedFinishTime = assetOrder.getPlannedEndTime();
         preStartOrderService.insert(iccid, imsi, orderId, accessoryImsi, expectedFinishTime);
         //组织数据下发副号
-
+        // 选号码
+        String tradeNo = getOtaTradeNo();
+        PlainDataMt plainDataMt = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
+        List<PlainDataMt> plainDatas = new ArrayList<>();
+        plainDatas.add(plainDataMt);
+        MtData mtData = new MtData();
+        mtData.setPlainDatas(plainDatas);
+        String sms = ussdBusiServicePack.ussdBusiServicePack(mtData);
+        SMS.add(sms);
         return SMS;
     }
 
@@ -93,7 +100,7 @@ public class LUController {
      * @param instructionList
      * @return
      */
-    private String handleOrderAndAccessoryImsi(List<LocationUpdateInstruction> instructionList) throws Exception{
+    private List<String> handleOrderAndAccessoryImsi(List<LocationUpdateInstruction> instructionList) throws Exception{
         if(null == instructionList || instructionList.size() < 1) {
             return null;
         }
@@ -117,10 +124,9 @@ public class LUController {
             SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
             cache.add(SMS);
         }
-
         //设置订单为启用状态
         //下发副号相关信息
-        return "";
+        return cache;
     }
 
     /**
@@ -129,7 +135,7 @@ public class LUController {
      * @param mcc
      * @return
      */
-    private AssetOrder getByIccid(List<String> iccidList, String mcc) {
+    private AssetOrder getByIccids(List<String> iccidList, String mcc) {
         List<AssetOrder> cache = new ArrayList<>();
         List<AssetOrder> list = assetOrderService.getListByIccids(iccidList);
         for(AssetOrder assetOrder: list) {
