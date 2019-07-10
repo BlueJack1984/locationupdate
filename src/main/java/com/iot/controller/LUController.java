@@ -110,6 +110,7 @@ public class LUController {
      */
     private List<String> handleOrderAndAccessoryImsi(List<LocationUpdateInstruction> instructionList) throws Exception{
         if(null == instructionList || instructionList.size() < 1) {
+            log.info("");
             return null;
         }
         String SMS = "";
@@ -147,6 +148,7 @@ public class LUController {
     private AssetOrder getByIccids(List<String> iccidList, String mcc) throws Exception{
         List<AssetOrder> cache = new ArrayList<>();
         if(null == iccidList || iccidList.size() < 1) {
+            log.info("查询订单参数iccidList集合元素为空");
             return null;
         }
         for(String iccid: iccidList) {

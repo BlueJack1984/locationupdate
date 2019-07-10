@@ -411,7 +411,6 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             }
             simIccid = response.getRespData().getSimIccid();
             simImsi = response.getRespData().getSimImsi();
-        }else if(orderSoftsimUsageList.size() > 1) {
             logger.info("查询到的订单数量大于一个");
             return null;
         }else {
