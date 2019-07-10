@@ -32,8 +32,15 @@
 		  update asset_order_t set exception_flag=#{newFlag},exception_cause = #{newCause} where order_id = #{orderCode};
 	</update>
 
-	<select id="getListByIccids" resultType="com.iot.otaBean.assetOrder.AssetOrder">
-
+	<!--备用，暂时没有使用-->
+	<select id="getListByIccids"  resultType="com.iot.otaBean.assetOrder.AssetOrder">
+		select * from  asset_order_t
+		where asset_id in
+		<foreach item="iccid" collection="iccidList" open="(" separator="," close=")">
+			#{iccid}
+		</foreach>
+		and (status = '1' or status = '2' or status = '5')
+		and order_purpose = '2'
 	</select>
 </mapper>    
     

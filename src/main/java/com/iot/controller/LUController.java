@@ -1,10 +1,12 @@
 package com.iot.controller;
 
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
+import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.io.request.LUInput;
 import com.iot.otaBean.assetOrder.AssetOrder;
 import com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage;
 import com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction;
+import com.iot.otaBean.mo.PositionMo;
 import com.iot.otaBean.mt.MtData;
 import com.iot.otaBean.mt.PlainDataMt;
 import com.iot.service.interfaces.*;
@@ -142,15 +144,25 @@ public class LUController {
      * @param mcc
      * @return
      */
-    private AssetOrder getByIccids(List<String> iccidList, String mcc) {
+    private AssetOrder getByIccids(List<String> iccidList, String mcc) throws Exception{
         List<AssetOrder> cache = new ArrayList<>();
-        List<AssetOrder> list = assetOrderService.getListByIccids(iccidList);
-        for(AssetOrder assetOrder: list) {
-            String coverCountry = assetOrder.getCoverCountry();
-            if(null != coverCountry && coverCountry.contains(mcc)) {
-                cache.add(assetOrder);
-                if(cache.size() > 1) {
-                    return null;
+        if(null == iccidList || iccidList.size() < 1) {
+            return null;
+        }
+        for(String iccid: iccidList) {
+            //复用原bip功能代码
+            PositionMo positionMo = new PositionMo();
+            DeviceInitRec deviceInitRec = new DeviceInitRec();
+            positionMo.setImei(iccid);
+            positionMo.setMcc(mcc);
+            AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
+            if(null != assetOrder) {
+                String coverCountry = assetOrder.getCoverCountry();
+                if(null != coverCountry && coverCountry.contains(mcc)) {
+                    cache.add(assetOrder);
+                    if(cache.size() > 1) {
+                        return null;
+                    }
                 }
             }
         }
