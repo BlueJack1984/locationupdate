@@ -12,6 +12,7 @@ import com.iot.util.DateUtils;
 import com.packer.commons.sms.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,7 @@ public class LUController {
     private final USSDPackService ussdBusiServicePack;
     private final IAssetManageBusiDao assetManageBusiDao;
 
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/luMsgHandle")
     public List<String> LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
@@ -76,21 +78,25 @@ public class LUController {
             log.info("无法判断订单，不能下发副号");
             return null;
         }
-        //设置订单为预启用状态，生成记录
+        //组织数据下发副号,设置订单为预启用状态
+        // 选号码
         String iccid = assetOrder.getAssetId();
         String orderId = assetOrder.getOrderId();
-        String accessoryImsi = "";
-        String expectedFinishTime = assetOrder.getPlannedEndTime();
-        preStartOrderService.insert(iccid, imsi, orderId, accessoryImsi, expectedFinishTime);
-        //组织数据下发副号
-        // 选号码
         String tradeNo = getOtaTradeNo();
         PlainDataMt plainDataMt = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
+
+        //生成记录
+        String accessoryImsi = plainDataMt.getCmdParams().getImsi();
+        String expectedFinishTime = assetOrder.getPlannedEndTime();
+        preStartOrderService.insert(iccid, imsi, orderId, accessoryImsi, expectedFinishTime);
+
+        //将下行数据进行包装返回
         List<PlainDataMt> plainDatas = new ArrayList<>();
         plainDatas.add(plainDataMt);
         MtData mtData = new MtData();
         mtData.setPlainDatas(plainDatas);
         String sms = ussdBusiServicePack.ussdBusiServicePack(mtData);
+        log.info("LU下行消息：" + sms);
         SMS.add(sms);
         return SMS;
     }
@@ -119,9 +125,10 @@ public class LUController {
             PlainDataMt plainDataMt = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
             List<PlainDataMt> plainDatas = new ArrayList<>();
             plainDatas.add(plainDataMt);
-                    MtData mtData = new MtData();
+            MtData mtData = new MtData();
             mtData.setPlainDatas(plainDatas);
             SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
+            log.info("LU下行消息集合：" + SMS);
             cache.add(SMS);
         }
         //设置订单为启用状态

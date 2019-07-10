@@ -433,7 +433,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
     /**
      * 旅游卡获取副号
      */
-    private PlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, LUMo luInformation, String iccid, String imsi) throws Exception{
+    private PlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, LUMo luMo, String iccid, String imsi) throws Exception{
         String UssdPre = "";
         String plmn = "";
         PlainDataMt plainDataMt = new PlainDataMt();
