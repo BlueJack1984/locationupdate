@@ -439,11 +439,11 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         PlainDataMt plainDataMt = new PlainDataMt();
         CmdParamData cmdParamData = new CmdParamData();
         cmdParamData.setOtaTradeNo(tradeNo);
-        cmdParamData.setOldIccid(null);
+        cmdParamData.setOldIccid(iccid);
         cmdParamData.setNewIccid(iccid);
-        cmdParamData.setpIccid(null);
+        cmdParamData.setpIccid(iccid);
         cmdParamData.setImsi(ResourceUtil.getEfImsi(softSimResourceInfo,imsi));
-        cmdParamData.setDataKeyIndex(null);
+        //cmdParamData.setDataKeyIndex(null);
         cmdParamData.setCallControl(softSimResourceInfo.getCallFlag());
         List<SoftSimResourceImsi> softSimResourceImsis = softSimResourceImsiDao.querySoftsimResourceImsi(
                 softSimResourceInfo.getIccid(), imsi);
