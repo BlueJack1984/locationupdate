@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 订单业务
@@ -39,7 +37,6 @@ public class LUController {
 
     private final LocationUpdateInstructionService instructionService;
     private final AssetSoftsimUsageService assetSoftsimUsageService;
-    private final AssetOrderService assetOrderService;
     private final PreStartOrderService preStartOrderService;
     protected final SelectOrderService selectOrderService;
     private final SelectNumberService selectNumberService;
@@ -52,12 +49,12 @@ public class LUController {
 
         List<String> SMS = new ArrayList<>();
         //查询location_position_instruction_t是否有写入下发要求
-        List<LocationUpdateInstruction> instructionList = instructionService.getList();
-        if(null != instructionList && instructionList.size() > 0) {
-            //这里设置订单为启用状态
-            //把checksum置位AA55下发副号信息
-            return handleOrderAndAccessoryImsi(instructionList);
-        }
+//        List<LocationUpdateInstruction> instructionList = instructionService.getList();
+//        if(null != instructionList && instructionList.size() > 0) {
+//            //这里设置订单为启用状态
+//            //把checksum置位AA55下发副号信息
+//            return handleOrderAndAccessoryImsi(instructionList);
+//        }
         String imsi = luInput.getImsi();
         List<AssetSoftsimUsage> assetSoftsimUsageList = assetSoftsimUsageService.getListByImsi(imsi);
         if(null == assetSoftsimUsageList || assetSoftsimUsageList.size() < 1) {
@@ -65,7 +62,7 @@ public class LUController {
             return null;
         }
         //取出所有旅游卡iccid
-        List<String> iccidList = new ArrayList<>();
+        Set<String> iccidList = new HashSet<>();
         for(AssetSoftsimUsage assetSoftsimUsage : assetSoftsimUsageList) {
             String iccid = assetSoftsimUsage.getIccid();
             if(null != iccid && ! "".equals(iccid)) {
@@ -145,7 +142,7 @@ public class LUController {
      * @param mcc
      * @return
      */
-    private AssetOrder getByIccids(List<String> iccidList, String mcc) throws Exception{
+    private AssetOrder getByIccids(Set<String> iccidList, String mcc) throws Exception{
         List<AssetOrder> cache = new ArrayList<>();
         if(null == iccidList || iccidList.size() < 1) {
             log.info("查询订单参数iccidList集合元素为空");

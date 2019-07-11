@@ -27,7 +27,7 @@ public class AssetSoftsimUsageServiceImpl implements AssetSoftsimUsageService {
     @Override
     public List<AssetSoftsimUsage> getListByImsi(String imsi) {
 
-        //assetSoftsimUsageDao
-        return null;
+        List<AssetSoftsimUsage> list = assetSoftsimUsageDao.getListByImsi(imsi);
+        return list;
     }
 }

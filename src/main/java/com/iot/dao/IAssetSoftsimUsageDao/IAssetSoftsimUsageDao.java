@@ -1,8 +1,11 @@
 package com.iot.dao.IAssetSoftsimUsageDao;
 
+import com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface IAssetSoftsimUsageDao {
@@ -15,5 +18,8 @@ public interface IAssetSoftsimUsageDao {
 
     /**
      * 根据imsi获取设备码号表数据集合
+     * @param imsi
+     * @return
      */
+    List<AssetSoftsimUsage> getListByImsi(@Param("imsi") String imsi);
 }
