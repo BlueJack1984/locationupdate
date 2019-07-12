@@ -251,7 +251,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         }
         SoftSimResourceImsi softSimResourceImsi = softSimResourceImsis.get(0);
         cmdParamData.setAlgFlag(StringUtil.paddingHeadZero(softSimResourceImsi.getAlgFlag(),2));
-        //USSD prefix
+        //USSD prefixc
         Supplier supplier = supplierDao.querySupplierByCode(softSimResourceInfo.getSupplierCode());
         if(!StringHelper.isEmpty(supplier.getUssdPre())){
             UssdPre = supplier.getUssdPre();

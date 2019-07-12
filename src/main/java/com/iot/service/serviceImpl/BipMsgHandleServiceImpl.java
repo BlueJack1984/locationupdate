@@ -113,6 +113,11 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                     plainDatas.add(plainDataMt);
                     MtData mtData = new MtData();
                     mtData.setPlainDatas(plainDatas);
+                    //添加的代码
+                    mtData.setBusiType(positionMo.getBusiType());
+                    mtData.setKeyIndex("0" + positionMo.getKeyIndex());
+                    mtData.setCheckNum(positionMo.getCheckNum());
+                    mtData.setManuFlag(positionMo.getManuFlag());
                     SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
                     return SMS;
                 }else {
@@ -130,6 +135,11 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                 plainDatas.add(plainDataMt);
                 MtData mtData = new MtData();
                 mtData.setPlainDatas(plainDatas);
+                //添加的代码
+                mtData.setBusiType(positionMo.getBusiType());
+                mtData.setKeyIndex("0" + positionMo.getKeyIndex());
+                mtData.setCheckNum(positionMo.getCheckNum());
+                mtData.setManuFlag(positionMo.getManuFlag());
                 SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
                 return SMS;
             }else {
