@@ -73,7 +73,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                         organizeData(cmdParamData.getUssdPrefix()) +
                         organizeData(checkNewIccid(cmdParamData.getNewIccid())) +
                         organizeData(apn) +
-                        organizeData(cmdParamData.getSca()) +
+                        organizeData(checkSca(cmdParamData.getSca())) +
                         organizeData(cmdParamData.getTelData()) +
                         organizeData1(cmdParamData.getPlmn()) +
                         organizeData(cmdParamData.getBipParam()) +
@@ -147,5 +147,13 @@ public class USSDPackServiceImpl implements USSDPackService {
         }else {
             return ascii.reconvert(newIccid);
         }
+    }
+
+    private String checkSca(String sca) {
+        if(null == sca || "".equals(sca)) {
+            return null;
+        }
+        String[] array = sca.split(";");
+        return null == array ? null : array[0];
     }
 }
