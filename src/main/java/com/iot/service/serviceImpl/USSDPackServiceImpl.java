@@ -94,6 +94,25 @@ public class USSDPackServiceImpl implements USSDPackService {
         SMS = cipherdata + MAC;
         return SMS;
     }
+
+    /**
+     * LU包装
+     * @param mtData
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public String ussdLUBusiServicePack(MtData mtData) throws Exception {
+        List<PlainDataMt> plainDataMtList = mtData.getPlainDatas();
+        PlainDataMt plainDataMt = new PlainDataMt();
+        //String cmdType = plainDataMt.getCmdType();
+        String checkNum = mtData.getCheckNum();
+        String deliverData = null;
+        String userData = "";
+        String HexIV = "0000000000000000";
+        return null;
+    }
+
     String getStrLength(String str){
         String strLen = null;
         strLen = Integer.toHexString(str.length()/2);

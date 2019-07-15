@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.iot.dao.IAssetSoftsimUsageDao.IAssetSoftsimUsageDao">
+<mapper namespace="com.iot.dao.preStartOrderRecord.IPreStartOrderRecordDao">
 	<sql id="c_pre_start_order_record_t">
 		_pre_start_order_record_t.id, _pre_start_order_record_t.iccid,
 		_pre_start_order_record_t.imsi, _pre_start_order_record_t.order_id orderId,
@@ -15,8 +15,8 @@
 	<sql id="t_pre_start_order_record_t">
 		pre_start_order_record_t
 	</sql>
-	<insert id="insert" parameterType="com.iot.otaBean.preStartOrderRecord.PreStartOrderRecord">
-		insert into <include refid="c_pre_start_order_record_t"/>
+	<insert id="insert" parameterType="com.iot.otaBean.preStartOrderRecord.PreStartOrderRecord" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="t_pre_start_order_record_t"/>
 		(id, iccid, imsi, order_id, accessory_imsi, start_time,
 		expected_finish_time, status, create_time, update_time)
 		values(#{preStartOrderRecord.id}, #{preStartOrderRecord.iccid},

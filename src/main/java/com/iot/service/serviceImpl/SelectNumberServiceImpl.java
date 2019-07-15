@@ -291,6 +291,8 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         }else {
             logger.info("订单预计结束时间为空");
         }
+        //将前两位去掉
+        expTime = expTime.substring(2, expTime.length());
         cmdParamData.setExpTime(StringUtil.string2ADN(expTime));
         cmdParamData.setCoverMcc(softSimResourceImsi.getCoverCountry());
         cmdParamData.setApn(softSimResourceInfo.getApn());
@@ -411,8 +413,6 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             }
             simIccid = response.getRespData().getSimIccid();
             simImsi = response.getRespData().getSimImsi();
-            logger.info("查询到的订单数量大于一个");
-            return null;
         }else {
             //查询到正在使用的副号
             AssetOrderSoftsimUsage assetOrderSoftsimUsage = orderSoftsimUsageList.get(0);

@@ -47,14 +47,16 @@ public class LUController {
     @PostMapping("/luMsgHandle")
     public List<String> LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
+        log.info("LU服务接收到的lu实体信息：" + luInput);
         List<String> SMS = new ArrayList<>();
         //查询location_position_instruction_t是否有写入下发要求
-//        List<LocationUpdateInstruction> instructionList = instructionService.getList();
-//        if(null != instructionList && instructionList.size() > 0) {
-//            //这里设置订单为启用状态
-//            //把checksum置位AA55下发副号信息
-//            return handleOrderAndAccessoryImsi(instructionList);
-//        }
+        List<LocationUpdateInstruction> instructionList = instructionService.getList();
+        if(null != instructionList && instructionList.size() > 0) {
+            //这里设置订单为启用状态
+            //把checksum置位AA55下发副号信息
+            return handleOrderAndAccessoryImsi(instructionList);
+        }
+        log.info("location_update_instruction_t表数据为空");
         String imsi = luInput.getImsi();
         List<AssetSoftsimUsage> assetSoftsimUsageList = assetSoftsimUsageService.getListByImsi(imsi);
         if(null == assetSoftsimUsageList || assetSoftsimUsageList.size() < 1) {
@@ -70,6 +72,7 @@ public class LUController {
             }
         }
         //根据iccid列表查出订单列表
+        log.info("查询到的所有旅游卡iccid列表：" + iccidList);
         //mcc三位，mnc两位
         String mcc = luInput.getMccmnc().substring(0, 3);
         AssetOrder assetOrder = getByIccids(iccidList, mcc);
@@ -93,6 +96,11 @@ public class LUController {
         List<PlainDataMt> plainDatas = new ArrayList<>();
         plainDatas.add(plainDataMt);
         MtData mtData = new MtData();
+        //添加的代码
+        mtData.setBusiType("01");
+        mtData.setKeyIndex("0" + "2");
+        mtData.setCheckNum("AA55");
+        mtData.setManuFlag("00");
         mtData.setPlainDatas(plainDatas);
         String sms = ussdBusiServicePack.ussdBusiServicePack(mtData);
         log.info("LU下行消息：" + sms);
@@ -126,6 +134,14 @@ public class LUController {
             List<PlainDataMt> plainDatas = new ArrayList<>();
             plainDatas.add(plainDataMt);
             MtData mtData = new MtData();
+            //添加的代码，业务类型01卡，02设备
+            mtData.setBusiType("01");
+            //取值为01-05范围内随机数
+            mtData.setKeyIndex("0" + positionMo.getKeyIndex());
+            //校验和
+            mtData.setCheckNum("AA55");
+            //
+            mtData.setManuFlag(positionMo.getManuFlag());
             mtData.setPlainDatas(plainDatas);
             SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
             log.info("LU下行消息集合：" + SMS);
