@@ -3,6 +3,7 @@ package com.iot.service.interfaces;
 import com.iot.otaBean.assetOrder.AssetOrder;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.mo.PositionMo;
+import com.iot.otaBean.mt.LUMtData;
 import com.iot.otaBean.mt.LUPlainDataMt;
 import com.iot.otaBean.mt.MtData;
 import com.iot.otaBean.mt.PlainDataMt;
@@ -18,5 +19,5 @@ public interface SelectNumberService {
     /**
      * 针对旅游卡的选副号服务
      */
-    public LUPlainDataMt selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception;
+    public LUMtData selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception;
 }

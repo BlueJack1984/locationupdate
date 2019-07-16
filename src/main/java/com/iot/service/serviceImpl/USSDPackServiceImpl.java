@@ -97,16 +97,15 @@ public class USSDPackServiceImpl implements USSDPackService {
 
     /**
      * LU包装
-     * @param mtData
+     * @param luMtData
      * @return
      * @throws Exception
      */
     @Override
-    public String ussdLUBusiServicePack(MtData mtData) throws Exception {
-        List<PlainDataMt> plainDataMtList = mtData.getPlainDatas();
-        PlainDataMt plainDataMt = new PlainDataMt();
-        //String cmdType = plainDataMt.getCmdType();
-        String checkNum = mtData.getCheckNum();
+    public String ussdLUBusiServicePack(LUMtData luMtData) throws Exception {
+        List<LUPlainDataMt> luPlainDataMtList = luMtData.getLuPlainDataMtList();
+        LUPlainDataMt luPlainDataMt = null;
+        String checkNum = luMtData.getCheckNum();
         String deliverData = null;
         String userData = "";
         String HexIV = "0000000000000000";
@@ -116,15 +115,42 @@ public class USSDPackServiceImpl implements USSDPackService {
         //添加iccid转换器
         ADNConvertor ascii = new ADNConvertor();
 
-        for(int i = 0; i < plainDataMtList.size(); i ++) {
-            plainDataMt = plainDataMtList.get(i);
-            if("33".equals(plainDataMt.getCmdType())) {
-
-            }else if("31".equals(plainDataMt.getCmdType()) || "32".equals(plainDataMt.getCmdType())) {
-
+        for(int i = 0; i < luPlainDataMtList.size(); i ++) {
+            luPlainDataMt = luPlainDataMtList.get(i);
+            if("33".equals(luPlainDataMt.getCmdType())) {
+                return null;
+            }else if("31".equals(luPlainDataMt.getCmdType()) || "32".equals(luPlainDataMt.getCmdType())) {
+                LUCmdParamData luCmdParamData = luPlainDataMt.getLuCmdParamData();
+                //处理国家码 added by lushusheng
+                String bitMapMcc = "";
+                if(null != luCmdParamData.getCoverMcc()) {
+                    bitMapMcc = ResourceUtil.genMccBitMap(luCmdParamData.getCoverMcc());
+                }
+                deliverData = luCmdParamData.getPrimaryIccidSuffix() +
+                        organizeCallControll(luCmdParamData.getCallControlFlag()) +
+                        organizeData(luCmdParamData.getExpTime()) +
+                        luCmdParamData.getOtaTradeNo() +
+                        organizeData(bitMapMcc) +
+                        organizeData1(luCmdParamData.getPlmn()) +
+                        luCmdParamData.getImsi() +
+                        luCmdParamData.getAlgorithm()+
+                        luCmdParamData.getDataKeyIndex() +
+                        luCmdParamData.getKeyData();
+                userData += luPlainDataMt.getCmdType() + getStrLength(deliverData) +deliverData;
             }
         }
-        return null;
+        userData = checkNum + userData;
+        String[] keys = com.iot.constant.SysConstants.OTA_COMM_KEY_MAP.get(luMtData.getManuFlag());
+        String key = keys[Integer.parseInt(luMtData.getKeyIndex()) - 1];
+        String cipherdata = DESCrypto.des_cbc_encrypt(key, userData, HexIV);
+        cipherdata = "0" + luMtData.getBusiType() + luMtData.getKeyIndex() + cipherdata;
+        String len = getStrLength(cipherdata + "00000000"); //"00000000"补充MAC的4个字节
+        cipherdata = len + cipherdata;
+        String cipherdataMAC = DESCrypto.des_cbc_encrypt(key, cipherdata, HexIV);
+        cipherdataLen = cipherdataMAC.length();
+        MAC = cipherdataMAC.substring((cipherdataLen - 8), cipherdataLen);
+        SMS = cipherdata + MAC;
+        return SMS;
     }
 
     String getStrLength(String str){

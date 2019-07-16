@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-//@Service("SelectNumberService")
 @Service
 public class SelectNumberServiceImpl implements SelectNumberService {
     private static final Log logger = LogFactory.getLog(SelectNumberServiceImpl.class);
@@ -398,7 +397,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
      * 针对旅游卡的选副号服务
      */
     @Override
-    public LUPlainDataMt selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception {
+    public LUMtData selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception {
         String simIccid = "";
         String simImsi = "";
         SelectLocalSoftSimResponse response = null;
@@ -426,15 +425,34 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
             return null;
         }
+        List<AssetInfo> assetInfoList = assetInfoDao.queryAssetInfoByAssetId(simIccid);
+        if(null == assetInfoList || assetInfoList.size() < 1) {
+            logger.error("iccid为"+ iccid + "查询的设备信息不存在！");
+            return null;
+        }
+        String manuFlag = assetInfoList.get(0).getManufacturerCode();
         LUPlainDataMt luPlainDataMt = getAccessoryNumberObj(assetOrder, tradeNo,
-                softSimResourceInfos.get(0), simIccid, simImsi);
-        return luPlainDataMt;
+                softSimResourceInfos.get(0), simIccid, simImsi, manuFlag);
+        //将下行数据进行包装返回
+        List<LUPlainDataMt> luPlainDataMtList = new ArrayList<>();
+        luPlainDataMtList.add(luPlainDataMt);
+        LUMtData luMtData = new LUMtData();
+        //添加的代码，业务类型01卡，02设备
+        luMtData.setBusiType("01");
+        //取值为01-05范围内随机数
+        luMtData.setKeyIndex("0" + (new Random().nextInt(5) + 1));
+        //校验和
+        luMtData.setCheckNum("AA55");
+        luMtData.setLuPlainDataMtList(luPlainDataMtList);
+        //生产厂家标识
+        luMtData.setManuFlag(manuFlag);
+        return luMtData;
     }
 
     /**
      * 旅游卡获取副号
      */
-    private LUPlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, String iccid, String imsi) throws Exception{
+    private LUPlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, String iccid, String imsi, String manuFlag) throws Exception{
         String plmn = "";
         LUPlainDataMt luPlainDataMt = new LUPlainDataMt();
         LUCmdParamData luCmdParamData = new LUCmdParamData();
@@ -471,15 +489,10 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         String deOPC = KeyUtil.decryptKIorOPC(
                 Integer.parseInt(softSimResourceInfo.getKeyIndex()),
                 softSimResourceInfo.getOpc()).substring(0, 32);
-        List<AssetInfo> assetInfoList = assetInfoDao.queryAssetInfoByAssetId(iccid);
-        if(null == assetInfoList || assetInfoList.size() < 1) {
-            logger.error("iccid为"+ iccid + "查询的设备信息不存在！");
-            return null;
-        }
+
         String sessionKey = ResourceUtil
-                .calcSessionKey(SysConstants.PERS_DATA_KEY.get(positionMo
-                                .getManuFlag())[Integer.parseInt(dataKeyIndex) - 1],
-                        positionMo.getpIccid(), tradeNo);//首次更新
+                .calcSessionKey(SysConstants.PERS_DATA_KEY.get(manuFlag)[Integer.parseInt(dataKeyIndex) - 1],
+                        iccid, tradeNo);//首次更新
         String keyData = LF3DesCryptoUtil.ecb_encrypt(sessionKey, deKI + deOPC,
                 JceBase.Padding.NoPadding);
         luCmdParamData.setKeyData(keyData);
@@ -491,6 +504,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         }else {
             logger.info("订单预计结束时间为空");
         }
+        luCmdParamData.setAlgorithm(softSimResourceInfo.getAlgFlag());
         luCmdParamData.setExpTime(StringUtil.string2ADN(expTime));
         luCmdParamData.setCoverMcc(softSimResourceImsi.getCoverCountry());
         String cmdStr = JsonUtil.getJSONString(luCmdParamData);

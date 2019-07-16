@@ -7,8 +7,8 @@ import com.iot.otaBean.assetOrder.AssetOrder;
 import com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage;
 import com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction;
 import com.iot.otaBean.mo.PositionMo;
-import com.iot.otaBean.mt.MtData;
-import com.iot.otaBean.mt.PlainDataMt;
+import com.iot.otaBean.mt.LUMtData;
+import com.iot.otaBean.mt.LUPlainDataMt;
 import com.iot.service.interfaces.*;
 import com.iot.util.DateUtils;
 import com.packer.commons.sms.util.StringUtil;
@@ -85,24 +85,18 @@ public class LUController {
         String iccid = assetOrder.getAssetId();
         String orderId = assetOrder.getOrderId();
         String tradeNo = getOtaTradeNo();
-        PlainDataMt plainDataMt = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
+        LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
 
+        if(null == luMtData) {
+            log.info("LU服务下发副号失败");
+            return null;
+        }
         //生成记录
-        String accessoryImsi = plainDataMt.getCmdParams().getImsi();
+        String accessoryImsi = luMtData.getLuPlainDataMtList().get(0).getLuCmdParamData().getImsi();
         String expectedFinishTime = assetOrder.getPlannedEndTime();
         preStartOrderService.insert(iccid, imsi, orderId, accessoryImsi, expectedFinishTime);
-
-        //将下行数据进行包装返回
-        List<PlainDataMt> plainDatas = new ArrayList<>();
-        plainDatas.add(plainDataMt);
-        MtData mtData = new MtData();
-        //添加的代码
-        mtData.setBusiType("01");
-        mtData.setKeyIndex("0" + "2");
-        mtData.setCheckNum("AA55");
-        mtData.setManuFlag("00");
-        mtData.setPlainDatas(plainDatas);
-        String sms = ussdBusiServicePack.ussdBusiServicePack(mtData);
+        //包装
+        String sms = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
         log.info("LU下行消息：" + sms);
         SMS.add(sms);
         return SMS;
@@ -130,20 +124,8 @@ public class LUController {
             //获取订单信息
             AssetOrder assetOrder = selectOrderService.getOrder(iccid, mcc);
             //选号码
-            PlainDataMt plainDataMt = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
-            List<PlainDataMt> plainDatas = new ArrayList<>();
-            plainDatas.add(plainDataMt);
-            MtData mtData = new MtData();
-            //添加的代码，业务类型01卡，02设备
-            mtData.setBusiType("01");
-            //取值为01-05范围内随机数
-            mtData.setKeyIndex("0" + positionMo.getKeyIndex());
-            //校验和
-            mtData.setCheckNum("AA55");
-            //
-            mtData.setManuFlag(positionMo.getManuFlag());
-            mtData.setPlainDatas(plainDatas);
-            SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
+            LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
+            SMS = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
             log.info("LU下行消息集合：" + SMS);
             cache.add(SMS);
         }
