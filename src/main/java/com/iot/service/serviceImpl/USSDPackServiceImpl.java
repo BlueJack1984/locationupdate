@@ -110,6 +110,20 @@ public class USSDPackServiceImpl implements USSDPackService {
         String deliverData = null;
         String userData = "";
         String HexIV = "0000000000000000";
+        int cipherdataLen = 0;
+        String MAC = null;
+        String SMS = null;
+        //添加iccid转换器
+        ADNConvertor ascii = new ADNConvertor();
+
+        for(int i = 0; i < plainDataMtList.size(); i ++) {
+            plainDataMt = plainDataMtList.get(i);
+            if("33".equals(plainDataMt.getCmdType())) {
+
+            }else if("31".equals(plainDataMt.getCmdType()) || "32".equals(plainDataMt.getCmdType())) {
+
+            }
+        }
         return null;
     }
 
