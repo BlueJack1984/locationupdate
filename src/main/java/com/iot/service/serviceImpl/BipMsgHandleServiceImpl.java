@@ -97,13 +97,13 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
             }
             if(positionMo.getpIccid().equals(deviceInitRec.getSeedIccid())){ //种子主号
                 if(deviceInitRec.getSoftsimType().equals("1")){ //种子主号下主号
-                    logger.info("种子主号下主号");
+                    logger.info("种子主号下主号及副号一起返回");
                     MtData mtData = selectNumberService.selectNumber(tradeNo, deviceInitRec.getIccid(),
                             positionMo, deviceInitRec);
                     SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
                     return SMS;
                 }else if(deviceInitRec.getSoftsimType().equals("2")){ //种子主号下副号
-                    logger.info("种子主号下副号");
+                    logger.info("种子主号下副号，只返回副号");
                     //选订单
                     AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
                     //选号码
@@ -125,7 +125,7 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                     return null;
                 }
             }else if(positionMo.getpIccid().equals(deviceInitRec.getNumberIccid())){ //主号下副号
-                logger.info("主号下副号");
+                logger.info("主号下副号，只返回副号");
                 //选订单
                 AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
                 //选号码

@@ -24,4 +24,11 @@ public interface ILocationUpdateInstructionDao {
      * @return 返回插入后的数据，便于回显
      */
     LocationUpdateInstruction insert(@Param("lu") LocationUpdateInstruction locationUpdateInstruction);
+
+    /**
+     *
+     * @param instructionList
+     * @return
+     */
+    int removeList(@Param("instructionList") List<LocationUpdateInstruction> instructionList);
 }

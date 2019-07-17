@@ -14,4 +14,6 @@ public interface LocationUpdateInstructionService {
      * @return
      */
     List<LocationUpdateInstruction> getList();
+
+    int removeList(List<LocationUpdateInstruction> instructionList);
 }

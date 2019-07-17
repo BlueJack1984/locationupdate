@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.assetInfoDao.IAssetInfoDao">
+	<sql id="c_asset_info_t">
+		_asset_info_t.id, _asset_info_t.asset_id assetId, _asset_info_t.iccid,
+		_asset_info_t.imsi, _asset_info_t.msisdn, _asset_info_t.outside_asset_id outsideAssetId,
+		_asset_info_t.asset_footprint assetFootprint, _asset_info_t.roamingsim_code roamingsimCode,
+		_asset_info_t.version, _asset_info_t.crc, _asset_info_t.chip_model chipModel,
+		_asset_info_t.asset_name assetName, _asset_info_t.pn, _asset_info_t.lifecycle,
+		_asset_info_t.lifecycle_start_time lifecycleStartTime, _asset_info_t.lifecycle_end_time lifecycleEndTime,
+		_asset_info_t.task_no taskNo, _asset_info_t.manufacturer_code manufacturerCode,
+		_asset_info_t.manufacturer_name manufacturerName, _asset_info_t.in_time inTime,
+		_asset_info_t.activate_flag activateFlag, _asset_info_t.activate_time activateTime,
+		_asset_info_t.partner_name partnerName, _asset_info_t.partner_code partnerCode,
+		_asset_info_t.last_report_time lastReportTime, _asset_info_t.last_report_position_mcc lastReportPositionMcc,
+		_asset_info_t.last_report_position_name lastReportPositionName, _asset_info_t.last_report_operator_code lastReportOperatorCode,
+		_asset_info_t.last_report_operator_name lastReportOperatorName, _asset_info_t.abandoned_time abandonedTime,
+		_asset_info_t.abandoned_cause abandonedCause, _asset_info_t.data_encrypt_factor dataEncryptFactor,
+		_asset_info_t.package_type packageType, _asset_info_t.package_code packageCode,
+		_asset_info_t.package_name packageName, _asset_info_t.package_flow packageFlow,
+		_asset_info_t.order_unint_dt orderUnintDt, _asset_info_t.package_use_rate packageUseRate,
+		_asset_info_t.assign_time assignTime, _asset_info_t.order_id orderId,
+		_asset_info_t.is_online isOnline, _asset_info_t.last_login_country lastLoginCountry,
+		_asset_info_t.last_login_operator lastLoginOperator, _asset_info_t.last_login_time lastLoginTime,
+		_asset_info_t.silent_cycle silentCycle, _asset_info_t.stop_service_period stopServicePeriod,
+		_asset_info_t.remark, _asset_info_t.operator_code operatorCode,
+		_asset_info_t.operator_name operatorName, _asset_info_t.supplier_code supplierCode,
+		_asset_info_t.supplier_name supplierName, _asset_info_t.init_flag initFlag,
+		_asset_info_t.ota_flag otaFlag, _asset_info_t.bip_flag bipFlag,
+		_asset_info_t.inuse_industry inuseIndustry, _asset_info_t.more_imsi_flag moreImsiFlag,
+		_asset_info_t.device_form deviceForm, _asset_info_t.manu_type manuType,
+		_asset_info_t.ota_protocol_version otaProtocolVersion, _asset_info_t.bip_param_name bipParamName,
+		_asset_info_t.device_status deviceStatus, _asset_info_t.card_material_code cardMaterialCode,
+		_asset_info_t.bip_is_update bipIsUpdate, _asset_info_t.is_purchase isPurchase
+	</sql>
+	<sql id="t_asset_info_t">
+		asset_info_t
+	</sql>
+	<!--<select id="queryAssetInfoByImeiAndIccid" resultMap="assetInfoMap"-->
+		<!--parameterType="String">-->
+		<!--select * from asset_info_t where asset_id= #{imei} or asset_id= #{iccid} limit 1;-->
+	<!--</select>-->
+
+	<!--<select id="queryHistAssetInfoByImeiAndIccid" resultMap="histAssetInfoMap"-->
+		<!--parameterType="String">-->
+		<!--select * from hist_asset_info_t where asset_id= #{imei} or asset_id= #{iccid} limit 1;-->
+	<!--</select>-->
+	<select id="queryAssetInfoByAssetId" resultType="com.iot.otaBean.assetInfo.AssetInfo" parameterType="String">
+		select <include refid="c_asset_info_t"/>
+		from <include refid="t_asset_info_t"/> _asset_info_t
+		where asset_id= #{assetId} limit 1;
+	</select>
+	<!--<update id="updateBipIsUpdate">-->
+		<!--update asset_info_t set bip_is_update = #{bipIsUpdate} where asset_id= #{assetId};-->
+	<!--</update>-->
+</mapper>    
+    
+  

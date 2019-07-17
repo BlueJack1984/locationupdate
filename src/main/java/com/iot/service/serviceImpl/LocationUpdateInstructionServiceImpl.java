@@ -25,4 +25,10 @@ public class LocationUpdateInstructionServiceImpl implements LocationUpdateInstr
         List<LocationUpdateInstruction> list = locationUpdateInstructionDao.getList();
         return list;
     }
+
+    @Override
+    public int removeList(List<LocationUpdateInstruction> instructionList) {
+        int result = locationUpdateInstructionDao.removeList(instructionList);
+        return result;
+    }
 }

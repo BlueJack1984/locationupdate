@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 订单业务
@@ -42,6 +44,8 @@ public class LUController {
     private final SelectNumberService selectNumberService;
     private final USSDPackService ussdBusiServicePack;
     private final IAssetManageBusiDao assetManageBusiDao;
+    //定义锁
+    private static final Lock lock = new ReentrantLock();
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/luMsgHandle")
@@ -50,9 +54,19 @@ public class LUController {
         log.info("LU服务接收到的lu实体信息：" + luInput);
         List<String> SMS = new ArrayList<>();
         //查询location_position_instruction_t是否有写入下发要求
-        List<LocationUpdateInstruction> instructionList = instructionService.getList();
+        List<LocationUpdateInstruction> instructionList = null;
+        lock.lock();
+        try {
+            //数据量大时可以分批查询
+            instructionList = instructionService.getList();
+            if(null != instructionList && instructionList.size() > 0) {
+                //将数据库的数据进行逻辑删除，保证其他线程查不到重复数据
+                instructionService.removeList(instructionList);
+            }
+        }finally {
+            lock.unlock();
+        }
         if(null != instructionList && instructionList.size() > 0) {
-            //这里设置订单为启用状态
             //把checksum置位AA55下发副号信息
             return handleOrderAndAccessoryImsi(instructionList);
         }
@@ -129,8 +143,7 @@ public class LUController {
             log.info("LU下行消息集合：" + SMS);
             cache.add(SMS);
         }
-        //设置订单为启用状态
-        //下发副号相关信息
+        //返回下发副号相关信息
         return cache;
     }
 

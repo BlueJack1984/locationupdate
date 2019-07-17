@@ -397,7 +397,8 @@ public class SelectNumberServiceImpl implements SelectNumberService {
      * 针对旅游卡的选副号服务
      */
     @Override
-    public LUMtData selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception {
+    public LUMtData selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String primaryIccid, String mcc) throws Exception {
+        //simIccid为副号iccid，simImsi为副号imsi号
         String simIccid = "";
         String simImsi = "";
         SelectLocalSoftSimResponse response = null;
@@ -405,7 +406,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.info("assetOrder查询为空");
             return null;
         }
-        List<AssetOrderSoftsimUsage> orderSoftsimUsageList = assetOrderSoftsimUsageDao.getList(iccid, assetOrder.getOrderId());
+        List<AssetOrderSoftsimUsage> orderSoftsimUsageList = assetOrderSoftsimUsageDao.getList(primaryIccid, assetOrder.getOrderId());
         if(null == orderSoftsimUsageList || orderSoftsimUsageList.size() < 1) {
             response = selectLocalSoftSim(assetOrder.getOrderId(), mcc);
             if(response == null || response.getError() == null || response.getRespData() == null || response.getRespData().getSimIccid() == null ||response.getRespData().getSimImsi() == null){
@@ -425,12 +426,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
             return null;
         }
-        List<AssetInfo> assetInfoList = assetInfoDao.queryAssetInfoByAssetId(simIccid);
-        if(null == assetInfoList || assetInfoList.size() < 1) {
-            logger.error("iccid为"+ iccid + "查询的设备信息不存在！");
-            return null;
-        }
-        String manuFlag = assetInfoList.get(0).getManufacturerCode();
+        String manuFlag = "00001";
         LUPlainDataMt luPlainDataMt = getAccessoryNumberObj(assetOrder, tradeNo,
                 softSimResourceInfos.get(0), simIccid, simImsi, manuFlag);
         //将下行数据进行包装返回
@@ -452,22 +448,22 @@ public class SelectNumberServiceImpl implements SelectNumberService {
     /**
      * 旅游卡获取副号
      */
-    private LUPlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, String iccid, String imsi, String manuFlag) throws Exception{
+    private LUPlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, String simIccid, String simImsi, String manuFlag) throws Exception{
         String plmn = "";
         LUPlainDataMt luPlainDataMt = new LUPlainDataMt();
         LUCmdParamData luCmdParamData = new LUCmdParamData();
         //设置primaryIccidSuffix属性，取最后三字节
-        luCmdParamData.setPrimaryIccidSuffix(iccid.substring(iccid.length() - 6));
+        luCmdParamData.setPrimaryIccidSuffix(simIccid.substring(simIccid.length() - 6));
         //设置callControlFlag
         luCmdParamData.setCallControlFlag(softSimResourceInfo.getCallFlag());
         //设置otaTradeNo属性
         luCmdParamData.setOtaTradeNo(tradeNo);
         //设置imsi属性
-        luCmdParamData.setImsi(ResourceUtil.getEfImsi(softSimResourceInfo,imsi));
+        luCmdParamData.setImsi(ResourceUtil.getEfImsi(softSimResourceInfo,simImsi));
         List<SoftSimResourceImsi> softSimResourceImsis = softSimResourceImsiDao.querySoftsimResourceImsi(
-                softSimResourceInfo.getIccid(), imsi);
+                softSimResourceInfo.getIccid(), simImsi);
         if(1 != softSimResourceImsis.size()){
-            logger.error("iccid为"+softSimResourceInfo.getIccid()+"imsi为"+imsi+"的主号多于一个或者不存在！");
+            logger.error("iccid为" + softSimResourceInfo.getIccid() + "imsi为"+ simImsi + "的主号多于一个或者不存在！");
             return null;
         }
         SoftSimResourceImsi softSimResourceImsi = softSimResourceImsis.get(0);
@@ -492,7 +488,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
 
         String sessionKey = ResourceUtil
                 .calcSessionKey(SysConstants.PERS_DATA_KEY.get(manuFlag)[Integer.parseInt(dataKeyIndex) - 1],
-                        iccid, tradeNo);//首次更新
+                        simIccid, tradeNo);//首次更新
         String keyData = LF3DesCryptoUtil.ecb_encrypt(sessionKey, deKI + deOPC,
                 JceBase.Padding.NoPadding);
         luCmdParamData.setKeyData(keyData);

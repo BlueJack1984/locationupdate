@@ -14,13 +14,20 @@
 	<select id="getList" resultType="com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction">
 		SELECT	<include refid="c_location_update_instruction_t"/>
 		FROM	<include refid="t_location_update_instruction_t"/> _location_update_instruction_t
-		where  1 = 1
+		where  1 = 1 and status = '0'
 	</select>
 	<insert id="insert" parameterType="com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction">
 		insert into <include refid="t_location_update_instruction_t"/>
 		(id, iccid, mcc, status, create_time, update_time)
 		values(#{lu.id}, #{lu.iccid}, #{lu.mcc}, #{lu.status}, #{lu.createTime}, #{lu.updateTime})
 	</insert>
+	<update id="removeList" parameterType="java.util.List">
+		<foreach collection="instructionList" item="instruction" index="index" open="" close="" separator=";">
+			update <include refid="t_location_update_instruction_t"/>
+			set status = '1'
+			where id = #{instruction.id,jdbcType=BIGINT}
+		</foreach>
+	</update>
 </mapper>
     
   
