@@ -426,7 +426,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
             return null;
         }
-        String manuFlag = "00001";
+        String manuFlag = "00077";
         LUPlainDataMt luPlainDataMt = getAccessoryNumberObj(assetOrder, tradeNo,
                 softSimResourceInfos.get(0), simIccid, simImsi, manuFlag);
         //将下行数据进行包装返回
@@ -501,6 +501,8 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.info("订单预计结束时间为空");
         }
         luCmdParamData.setAlgorithm(softSimResourceInfo.getAlgFlag());
+        //将前两位去掉
+        expTime = expTime.substring(2, expTime.length());
         luCmdParamData.setExpTime(StringUtil.string2ADN(expTime));
         luCmdParamData.setCoverMcc(softSimResourceImsi.getCoverCountry());
         String cmdStr = JsonUtil.getJSONString(luCmdParamData);

@@ -57,7 +57,7 @@ public class LUController {
         List<LocationUpdateInstruction> instructionList = null;
         lock.lock();
         try {
-            //数据量大时可以分批查询
+            //数据量大时可以分批查询处理
             instructionList = instructionService.getList();
             if(null != instructionList && instructionList.size() > 0) {
                 //将数据库的数据进行逻辑删除，保证其他线程查不到重复数据
@@ -80,7 +80,7 @@ public class LUController {
         //取出所有旅游卡iccid
         Set<String> iccidList = new HashSet<>();
         for(AssetSoftsimUsage assetSoftsimUsage : assetSoftsimUsageList) {
-            String iccid = assetSoftsimUsage.getIccid();
+            String iccid = assetSoftsimUsage.getAssetId();
             if(null != iccid && ! "".equals(iccid)) {
                 iccidList.add(iccid);
             }
@@ -91,7 +91,7 @@ public class LUController {
         String mcc = luInput.getMccmnc().substring(0, 3);
         AssetOrder assetOrder = getByIccids(iccidList, mcc);
         if(null == assetOrder) {
-            log.info("无法判断订单，不能下发副号");
+            log.info("查询到副号订单为空，不能下发副号");
             return null;
         }
         //组织数据下发副号,设置订单为预启用状态
@@ -139,6 +139,10 @@ public class LUController {
             AssetOrder assetOrder = selectOrderService.getOrder(iccid, mcc);
             //选号码
             LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
+            if(null == luMtData) {
+                log.info("LU服务下发副号失败: iccid:" + iccid + ", mcc:" + mcc);
+                continue;
+            }
             SMS = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
             log.info("LU下行消息集合：" + SMS);
             cache.add(SMS);

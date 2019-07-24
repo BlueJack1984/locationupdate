@@ -128,24 +128,24 @@ public class USSDPackServiceImpl implements USSDPackService {
                 }
                 deliverData = luCmdParamData.getPrimaryIccidSuffix() +
                         organizeCallControll(luCmdParamData.getCallControlFlag()) +
-                        organizeData(luCmdParamData.getExpTime()) +
+                        checkLUParameters(luCmdParamData.getExpTime(), 12) +
                         luCmdParamData.getOtaTradeNo() +
-                        organizeData(bitMapMcc) +
-                        organizeData1(luCmdParamData.getPlmn()) +
+                        checkLUParameters(bitMapMcc, 60) +
+                        organizeData1(luCmdParamData.getPlmn().substring(2)) +
                         luCmdParamData.getImsi() +
-                        luCmdParamData.getAlgorithm()+
+                        checkAlgorithm(luCmdParamData.getAlgorithm())+
                         luCmdParamData.getDataKeyIndex() +
                         luCmdParamData.getKeyData();
-                userData += luPlainDataMt.getCmdType() + getStrLength(deliverData) +deliverData;
+                userData += luPlainDataMt.getCmdType() + checkDeliverDataLength(deliverData) +deliverData;
             }
         }
         userData = checkNum + userData;
         String[] keys = com.iot.constant.SysConstants.OTA_COMM_KEY_MAP.get(luMtData.getManuFlag());
         String key = keys[Integer.parseInt(luMtData.getKeyIndex()) - 1];
         String cipherdata = DESCrypto.des_cbc_encrypt(key, userData, HexIV);
-        cipherdata = "0" + luMtData.getBusiType() + luMtData.getKeyIndex() + cipherdata;
-        String len = getStrLength(cipherdata + "00000000"); //"00000000"补充MAC的4个字节
-        cipherdata = len + cipherdata;
+        cipherdata = luMtData.getBusiType() + luMtData.getKeyIndex() + cipherdata;
+        //String len = getStrLength(cipherdata + "00000000"); //"00000000"补充MAC的4个字节
+        //cipherdata = len + cipherdata;
         String cipherdataMAC = DESCrypto.des_cbc_encrypt(key, cipherdata, HexIV);
         cipherdataLen = cipherdataMAC.length();
         MAC = cipherdataMAC.substring((cipherdataLen - 8), cipherdataLen);
@@ -214,5 +214,52 @@ public class USSDPackServiceImpl implements USSDPackService {
         }
         String[] array = sca.split(";");
         return null == array ? null : array[0];
+    }
+
+    public String checkAlgorithm(String algorithm) {
+        if(null == algorithm || "".equals(algorithm) || algorithm.length() > 2) {
+            return "05";
+        }
+        if(algorithm.length() == 1) {
+            return "0" + algorithm;
+        }else {
+            return algorithm;
+        }
+    }
+
+    public String checkDeliverDataLength(String deliverData) {
+        if(null == deliverData || "".equals(deliverData)) {
+            return "00";
+        }
+        String length = Integer.toHexString(deliverData.length()/2);
+        if(1 == length.length()){
+            length = "0" + length;
+        }else if(2 == length.length()){
+        }else {
+            logger.info("数据长度超过一字节，无法处理！");
+            return null;
+        }
+        return length;
+    }
+
+    /**
+     *
+     * @param parameter
+     * @param length 字符数
+     * @return
+     */
+    public String checkLUParameters(String parameter, int length) {
+        if(length < 1) {
+            logger.info("参数长度小于1");
+            return null;
+        }
+        if(null == parameter || "".equals(parameter)) {
+            StringBuffer buffer = new StringBuffer();
+            for(int i = 0; i < length; i ++) {
+                buffer.append("0");
+            }
+            return buffer.toString();
+        }
+        return parameter;
     }
 }
