@@ -20,4 +20,8 @@ public interface SelectNumberService {
      * 针对旅游卡的选副号服务
      */
     public LUMtData selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception;
+    /**
+     * 合肥分公司的选副号服务
+     */
+    LUMtData getAccessoryNumber(String tradeNo, AssetOrder assetOrder, String assetId, String mcc) throws Exception;
 }

@@ -512,4 +512,68 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         luPlainDataMt.setCmdLength(String.valueOf(cmdStr.length()));
         return luPlainDataMt;
     }
+
+
+    /**
+     * 合肥分公司的选副号服务开发
+     */
+    @Override
+    public LUMtData getAccessoryNumber(String tradeNo, AssetOrder assetOrder, String assetId, String mcc) throws Exception {
+        //simIccid为副号iccid，simImsi为副号imsi号
+        String simIccid = "";
+        String simImsi = "";
+        SelectLocalSoftSimResponse response = null;
+        if(null == assetOrder) {
+            logger.info("assetOrder查询为空");
+            return null;
+        }
+        List<AssetOrderSoftsimUsage> orderSoftsimUsageList = assetOrderSoftsimUsageDao.getList(assetId, assetOrder.getOrderId());
+        if(null == orderSoftsimUsageList || orderSoftsimUsageList.size() < 1) {
+            response = selectLocalSoftSim(assetOrder.getOrderId(), mcc);
+            if(response == null || response.getError() == null || response.getRespData() == null || response.getRespData().getSimIccid() == null ||response.getRespData().getSimImsi() == null){
+                logger.info("调用选择副号接口错误，未返回副号信息");
+                return null;
+            }
+            simIccid = response.getRespData().getSimIccid();
+            simImsi = response.getRespData().getSimImsi();
+        }else {
+            //查询到正在使用的副号
+            AssetOrderSoftsimUsage assetOrderSoftsimUsage = orderSoftsimUsageList.get(0);
+            simIccid = assetOrderSoftsimUsage.getIccid();
+            simImsi = assetOrderSoftsimUsage.getImsi();
+        }
+        List<SoftSimResourceInfo> softSimResourceInfos = softSimResourceInfoDao.querySoftsimByIccid(simIccid);
+        if(1 != softSimResourceInfos.size()){
+            logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
+            return null;
+        }
+        //获取manuFlag属性
+        List<AssetInfo> assetInfoList = assetInfoDao.queryAssetInfoByAssetId(assetId);
+        if(null == assetInfoList || assetInfoList.size() < 1) {
+            logger.error("根据assetId查询不到设备，设备信息为：null");
+            return null;
+        }
+        String manuFlag = assetInfoList.get(0).getManufacturerCode();
+        if(null == manuFlag) {
+            logger.error("根据assetId查询到的设备制造商编码信息为：null");
+            return null;
+        }
+        LUPlainDataMt luPlainDataMt = getAccessoryNumberObj(assetOrder, tradeNo,
+                softSimResourceInfos.get(0), simIccid, simImsi, manuFlag);
+        //将下行数据进行包装返回
+        List<LUPlainDataMt> luPlainDataMtList = new ArrayList<>();
+        luPlainDataMtList.add(luPlainDataMt);
+        LUMtData luMtData = new LUMtData();
+        //添加的代码，业务类型01卡，02设备
+        luMtData.setBusiType("01");
+        //取值为01-05范围内随机数
+        luMtData.setKeyIndex("0" + (new Random().nextInt(5) + 1));
+        //校验和
+        luMtData.setCheckNum("A5A5");
+        luMtData.setLuPlainDataMtList(luPlainDataMtList);
+        //生产厂家标识
+        luMtData.setManuFlag(manuFlag);
+        return luMtData;
+    }
+
 }
