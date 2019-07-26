@@ -1,6 +1,7 @@
 package com.iot.controller;
 
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
+import com.iot.otaBean.assetBinding.AssetBinding;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.io.request.LUInput;
 import com.iot.otaBean.assetOrder.AssetOrder;
@@ -97,6 +98,13 @@ public class LUController {
         //组织数据下发副号,设置订单为预启用状态
         // 选号码
         String iccid = assetOrder.getAssetId();
+//        List<AssetBinding> assetBindingList = null;
+//        for(AssetBinding assetBinding : assetBindingList) {
+//            if(iccid.equals(assetBinding.getAssetId())) {
+//                log.info("旅游卡已经进行机卡绑定，无法下发副号");
+//                return null;
+//            }
+//        }
         String orderId = assetOrder.getOrderId();
         String tradeNo = getOtaTradeNo();
         LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
