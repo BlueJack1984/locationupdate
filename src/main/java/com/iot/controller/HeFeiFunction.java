@@ -47,12 +47,11 @@ public class HeFeiFunction {
 //            return null;
 //        }
         //查询订单
-        List<AssetOrder> assetOrderList = assetOrderDao.queryOrderByCode(orderId);
-        if(null == assetOrderList || assetOrderList.size() < 1) {
+        AssetOrder assetOrder = assetOrderDao.queryOrderByCode(orderId);
+        if(null == assetOrder) {
             log.info("查询到副号订单为空，不能下发副号");
             return null;
         }
-        AssetOrder assetOrder = assetOrderList.get(0);
         String coverCountry = assetOrder.getCoverCountry();
         if(null == coverCountry || ! coverCountry.contains(mcc)) {
             log.info("查询到的副号订单不包含mcc对应的覆盖国家，不能下发副号");

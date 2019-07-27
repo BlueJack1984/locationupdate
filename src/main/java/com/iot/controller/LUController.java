@@ -1,7 +1,8 @@
 package com.iot.controller;
 
+import com.iot.dao.assetBoundDao.IAssetBoundDao;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
-import com.iot.otaBean.assetBinding.AssetBinding;
+import com.iot.otaBean.assetBound.AssetBound;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.io.request.LUInput;
 import com.iot.otaBean.assetOrder.AssetOrder;
@@ -9,7 +10,6 @@ import com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage;
 import com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction;
 import com.iot.otaBean.mo.PositionMo;
 import com.iot.otaBean.mt.LUMtData;
-import com.iot.otaBean.mt.LUPlainDataMt;
 import com.iot.service.interfaces.*;
 import com.iot.util.DateUtils;
 import com.packer.commons.sms.util.StringUtil;
@@ -45,6 +45,7 @@ public class LUController {
     private final SelectNumberService selectNumberService;
     private final USSDPackService ussdBusiServicePack;
     private final IAssetManageBusiDao assetManageBusiDao;
+    private final IAssetBoundDao assetBoundDao;
     //定义锁
     private static final Lock lock = new ReentrantLock();
 
@@ -98,11 +99,13 @@ public class LUController {
         //组织数据下发副号,设置订单为预启用状态
         // 选号码
         String iccid = assetOrder.getAssetId();
-//        List<AssetBinding> assetBindingList = null;
-//        for(AssetBinding assetBinding : assetBindingList) {
-//            if(iccid.equals(assetBinding.getAssetId())) {
-//                log.info("旅游卡已经进行机卡绑定，无法下发副号");
-//                return null;
+//        List<AssetBound> assetBindingList = assetBoundDao.getList();
+//        if(null != assetBindingList) {
+//            for(AssetBound assetBound : assetBindingList) {
+//                if(iccid.equals(assetBound.getAssetId())) {
+//                    log.info("旅游卡已经进行机卡绑定，无法下发副号");
+//                    return null;
+//                }
 //            }
 //        }
         String orderId = assetOrder.getOrderId();

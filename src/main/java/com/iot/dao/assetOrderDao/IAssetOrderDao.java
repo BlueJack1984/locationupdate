@@ -11,6 +11,6 @@ public interface IAssetOrderDao {
     List<AssetOrder> queryStartedOrders(@Param("imei") String imei, @Param("now") String now);
     List<AssetOrder> queryPauseOrders(@Param("imei")String imei, @Param("mcc")String mcc, @Param("now")String now);
     List<AssetOrder> queryNotStartedOrders(@Param("imei")String imei, @Param("mcc")String mcc);
-    List<AssetOrder> queryOrderByCode(@Param("orderId")String orderId);
+    AssetOrder queryOrderByCode(@Param("orderId")String orderId);
     void updateException(@Param("orderCode")String orderCode, @Param("newFlag")String newFlag, @Param("newCause")String newCause);
 }
