@@ -11,7 +11,7 @@
 	<sql id="t_asset_bound_t">
 		asset_bound_t
 	</sql>
-	<select id="getList" resultType="">
+	<select id="getList" resultType="com.iot.otaBean.assetBound.AssetBound" >
 		select <include refid="c_asset_bound_t"/>
 		from <include refid="t_asset_bound_t"/> _asset_bound_t
 	</select>

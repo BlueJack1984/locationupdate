@@ -9,8 +9,8 @@ import java.util.List;
 @Mapper
 public interface IDeviceInitRecDao {
     public List<DeviceInitRec> queryInitRecByDeviceId(String deviceId);
-    public void endRecord(@Param("deviceInitRec")DeviceInitRec deviceInitRec,
-                          @Param("otaTradeNo")String otaTradeNo,
-                          @Param("moreImsiFlag")String moreImsiFlag,
-                          @Param("coverMcc")String coverMcc);
+//    public void endRecord(@Param("deviceInitRec")DeviceInitRec deviceInitRec,
+//                          @Param("otaTradeNo")String otaTradeNo,
+//                          @Param("moreImsiFlag")String moreImsiFlag,
+//                          @Param("coverMcc")String coverMcc);
 }
