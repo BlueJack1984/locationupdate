@@ -3,6 +3,7 @@ package com.iot.controller;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
 import com.iot.dao.assetOrderDao.IAssetOrderDao;
 import com.iot.otaBean.assetOrder.AssetOrder;
+import com.iot.otaBean.io.request.HeFeiInput;
 import com.iot.otaBean.mt.LUMtData;
 import com.iot.service.interfaces.SelectNumberService;
 import com.iot.service.interfaces.USSDPackService;
@@ -10,8 +11,13 @@ import com.iot.util.DateUtils;
 import com.packer.commons.sms.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -20,10 +26,11 @@ import java.util.List;
  * @author lushusheng
  * @date 2019-07-26
  */
-@Component
+@RestController
 @Slf4j
 @RequiredArgsConstructor
-public class HeFeiFunction {
+@RequestMapping("/hefei")
+public class HeFeiController {
 
     private final IAssetOrderDao assetOrderDao;
     private final IAssetManageBusiDao assetManageBusiDao;
@@ -31,21 +38,15 @@ public class HeFeiFunction {
     private final SelectNumberService selectNumberService;
     /**
      * 合肥分公司开发功能
-     * @param assetId
-     * @param orderId
-     * @param mcc
+     * @param heFeiInput 标识输入的请求参数
      * @return
      */
-    public String handle(String assetId, String orderId, String mcc) throws Exception{
+    @PostMapping("/handle")
+    public String handle(@RequestBody @Valid HeFeiInput heFeiInput) throws Exception{
 
-        /**
-         * 这里判断三个参数不为空：todo
-         */
-//        if(null == assetId || null == orderId || null == mcc
-//                || assetId.trim().equals("") || orderId.trim().equals("") || mcc.trim().equals("")) {
-//            log.info("请求参数不能为空");
-//            return null;
-//        }
+        String assetId = heFeiInput.getAssetId();
+        String orderId = heFeiInput.getOrderId();
+        String mcc = heFeiInput.getMcc();
         //查询订单
         AssetOrder assetOrder = assetOrderDao.queryOrderByCode(orderId);
         if(null == assetOrder) {
@@ -59,7 +60,7 @@ public class HeFeiFunction {
         }
         //可以下发副号
         String tradeNo = getOtaTradeNo();
-        LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, assetId, mcc);
+        LUMtData luMtData = selectNumberService.getAccessoryNumber(tradeNo, assetOrder, assetId, mcc);
         if(null == luMtData) {
             log.info("选择副号服务下发副号失败");
             return null;
