@@ -69,7 +69,7 @@ public class LUController {
             lock.unlock();
         }
         if(null != instructionList && instructionList.size() > 0) {
-            //把checksum置位AA55下发副号信息
+            //把checksum置位A5A5下发副号信息
             return handleOrderAndAccessoryImsi(instructionList);
         }
         log.info("location_update_instruction_t表数据为空");
@@ -110,6 +110,7 @@ public class LUController {
 //        }
         String orderId = assetOrder.getOrderId();
         String tradeNo = getOtaTradeNo();
+        log.info("***********本次流水号：" + tradeNo);
         LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
 
         if(null == luMtData) {

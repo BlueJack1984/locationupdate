@@ -426,7 +426,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
             return null;
         }
-        String manuFlag = "00077";
+        String manuFlag = "00001";
         LUPlainDataMt luPlainDataMt = getAccessoryNumberObj(assetOrder, tradeNo,
                 softSimResourceInfos.get(0), simIccid, simImsi, manuFlag);
         //将下行数据进行包装返回
@@ -438,7 +438,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         //取值为01-05范围内随机数
         luMtData.setKeyIndex("0" + (new Random().nextInt(5) + 1));
         //校验和
-        luMtData.setCheckNum("AA55");
+        luMtData.setCheckNum("A5A5");
         luMtData.setLuPlainDataMtList(luPlainDataMtList);
         //生产厂家标识
         luMtData.setManuFlag(manuFlag);
