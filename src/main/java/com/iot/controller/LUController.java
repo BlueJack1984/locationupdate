@@ -15,6 +15,7 @@ import com.iot.util.DateUtils;
 import com.packer.commons.sms.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,30 +52,32 @@ public class LUController {
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/luMsgHandle")
-    public List<String> LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
+    public String LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
         log.info("LU服务接收到的lu实体信息：" + luInput);
-        List<String> SMS = new ArrayList<>();
+        String uploadImsi = luInput.getImsi();
+        String downMessage = "";
         //查询location_position_instruction_t是否有写入下发要求
-        List<LocationUpdateInstruction> instructionList = null;
-        lock.lock();
-        try {
-            //数据量大时可以分批查询处理
-            instructionList = instructionService.getList();
-            if(null != instructionList && instructionList.size() > 0) {
-                //将数据库的数据进行逻辑删除，保证其他线程查不到重复数据
-                instructionService.removeList(instructionList);
-            }
-        }finally {
-            lock.unlock();
-        }
+        List<LocationUpdateInstruction> instructionList = instructionService.getList();
         if(null != instructionList && instructionList.size() > 0) {
-            //把checksum置位A5A5下发副号信息
-            return handleOrderAndAccessoryImsi(instructionList);
+            for(LocationUpdateInstruction instruction: instructionList) {
+                String assetId = instruction.getIccid();
+                String mcc = instruction.getMcc();
+                if(null == assetId || null == mcc) {
+                    continue;
+                }
+                AssetSoftsimUsage assetSoftsimUsage = assetSoftsimUsageService.getByAssetId(assetId);
+                String coverMcc = assetSoftsimUsage.getCoverMcc();
+                String imsi = assetSoftsimUsage.getImsi();
+                if(null != assetSoftsimUsage && null != coverMcc
+                        && coverMcc.contains(mcc) && uploadImsi.equals(imsi)) {
+                    //把checksum置位A5A5下发副号信息
+                    return handleOrderAndAccessoryImsi(assetId, mcc);
+                }
+            }
         }
         log.info("location_update_instruction_t表数据为空");
-        String imsi = luInput.getImsi();
-        List<AssetSoftsimUsage> assetSoftsimUsageList = assetSoftsimUsageService.getListByImsi(imsi);
+        List<AssetSoftsimUsage> assetSoftsimUsageList = assetSoftsimUsageService.getListByImsi(uploadImsi);
         if(null == assetSoftsimUsageList || assetSoftsimUsageList.size() < 1) {
             log.info("提示设备没有生产");
             return null;
@@ -98,21 +101,15 @@ public class LUController {
         }
         //组织数据下发副号,设置订单为预启用状态
         // 选号码
-        String iccid = assetOrder.getAssetId();
-//        List<AssetBound> assetBindingList = assetBoundDao.getList();
-//        if(null != assetBindingList) {
-//            for(AssetBound assetBound : assetBindingList) {
-//                if(iccid.equals(assetBound.getAssetId())) {
-//                    log.info("旅游卡已经进行机卡绑定，无法下发副号");
-//                    return null;
-//                }
-//            }
-//        }
+        String assetId = assetOrder.getAssetId();
+        if(isBinding(assetId)) {
+            log.info("设备已经进行机卡绑定，不能下发副号！");
+            return null;
+        }
         String orderId = assetOrder.getOrderId();
         String tradeNo = getOtaTradeNo();
         log.info("***********本次流水号：" + tradeNo);
-        LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
-
+        LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, assetId, mcc);
         if(null == luMtData) {
             log.info("LU服务下发副号失败");
             return null;
@@ -120,47 +117,42 @@ public class LUController {
         //生成记录
         String accessoryImsi = luMtData.getLuPlainDataMtList().get(0).getLuCmdParamData().getImsi();
         String expectedFinishTime = assetOrder.getPlannedEndTime();
-        preStartOrderService.insert(iccid, imsi, orderId, accessoryImsi, expectedFinishTime);
+        preStartOrderService.insert(assetId, uploadImsi, orderId, accessoryImsi, expectedFinishTime);
         //包装
-        String sms = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
-        log.info("LU下行消息：" + sms);
-        SMS.add(sms);
-        return SMS;
+        downMessage = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
+        log.info("LU下行消息：" + downMessage);
+        return downMessage;
     }
 
     /**
      *
-     * @param instructionList
+     * @param assetId
+     * @param mcc
      * @return
      */
-    private List<String> handleOrderAndAccessoryImsi(List<LocationUpdateInstruction> instructionList) throws Exception{
-        if(null == instructionList || instructionList.size() < 1) {
-            log.info("");
+    private String handleOrderAndAccessoryImsi(String assetId, String mcc) throws Exception{
+        if(StringUtils.isEmpty(assetId) || StringUtils.isEmpty(mcc)) {
+            log.info("传入的参数设备唯一标识assetId或者覆盖国家mcc为空");
             return null;
         }
-        String SMS = "";
-        List<String> cache = new ArrayList<>();
-        for(LocationUpdateInstruction luInstruction: instructionList) {
-            String iccid = luInstruction.getIccid();
-            String mcc = luInstruction.getMcc();
-            if(null == iccid || null == mcc) {
-                continue;
-            }
-            String tradeNo = getOtaTradeNo();
-            //获取订单信息
-            AssetOrder assetOrder = selectOrderService.getOrder(iccid, mcc);
-            //选号码
-            LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
-            if(null == luMtData) {
-                log.info("LU服务下发副号失败: iccid:" + iccid + ", mcc:" + mcc);
-                continue;
-            }
-            SMS = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
-            log.info("LU下行消息集合：" + SMS);
-            cache.add(SMS);
+        if(isBinding(assetId)) {
+            log.info("设备已经进行机卡绑定，不能下发副号！");
+            return null;
         }
+        String downMessage = "";
+        String tradeNo = getOtaTradeNo();
+        //获取订单信息
+        AssetOrder assetOrder = selectOrderService.getOrder(assetId, mcc);
+        //选号码
+        LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, assetId, mcc);
+        if(null == luMtData) {
+            log.info("LU服务下发副号失败: assetId:" + assetId + ", mcc:" + mcc);
+            return null;
+        }
+        downMessage = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
+        log.info("LU下行消息集合：" + downMessage);
         //返回下发副号相关信息
-        return cache;
+        return downMessage;
     }
 
     /**
@@ -196,6 +188,19 @@ public class LUController {
             return null;
         }
         return cache.get(0);
+    }
+
+    private boolean isBinding(String assetId) {
+        List<AssetBound> assetBindingList = assetBoundDao.getList();
+        if(null != assetBindingList) {
+            for(AssetBound assetBound : assetBindingList) {
+                if(assetId.equals(assetBound.getAssetId())) {
+                    log.info("旅游卡已经进行机卡绑定，无法下发副号");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

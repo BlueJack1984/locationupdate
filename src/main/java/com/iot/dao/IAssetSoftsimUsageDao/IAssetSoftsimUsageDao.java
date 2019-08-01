@@ -22,4 +22,11 @@ public interface IAssetSoftsimUsageDao {
      * @return
      */
     List<AssetSoftsimUsage> getListByImsi(@Param("imsi") String imsi);
+
+    /**
+     * 根据imsi获取设备码号表数据集合
+     * @param assetId
+     * @return
+     */
+    AssetSoftsimUsage getByAssetId(@Param("assetId") String assetId);
 }

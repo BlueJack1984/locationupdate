@@ -50,6 +50,12 @@
 		from <include refid="t_asset_softsim_usage_t"/> _asset_softsim_usage_t
 		where imsi = #{imsi} and status = '1' and soft_sim_type = '2'
 	</select>
+	<select id="getByAssetId" parameterType="java.lang.String" resultType="com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage">
+		select <include refid="c_asset_softsim_usage_t"/>
+		from <include refid="t_asset_softsim_usage_t"/> _asset_softsim_usage_t
+		where asset_id = #{assetId} and status = '1' and soft_sim_type = '2'
+		limit 0,1
+	</select>
 </mapper>    
     
   

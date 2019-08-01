@@ -148,7 +148,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-
         <!-- 配置java版本 不配置的话默认父类配置的是1.6-->
         <pluginManagement>
             <plugins>
