@@ -56,6 +56,8 @@ public class LUController {
     @PostMapping("/luMsgHandle")
     public String LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
+        //首先将LU位置上报信息存入记录表中
+
         log.info("LU服务接收到的lu实体信息：" + luInput);
         String uploadImsi = luInput.getImsi();
         String downMessage = "";
