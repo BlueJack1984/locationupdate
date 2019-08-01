@@ -8,5 +8,5 @@ public interface ILUUploadRecordService {
     /**
      *
      */
-    void insert()
+    void insert();
 }
