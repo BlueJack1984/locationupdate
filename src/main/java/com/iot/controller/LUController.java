@@ -2,6 +2,7 @@ package com.iot.controller;
 
 import com.iot.dao.assetBoundDao.IAssetBoundDao;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
+import com.iot.dao.lUUploadRecordDao.ILUUploadRecordDao;
 import com.iot.otaBean.assetBound.AssetBound;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.io.request.LUInput;
@@ -47,6 +48,7 @@ public class LUController {
     private final USSDPackService ussdBusiServicePack;
     private final IAssetManageBusiDao assetManageBusiDao;
     private final IAssetBoundDao assetBoundDao;
+    private final ILUUploadRecordDao luUploadRecordDao;
     //定义锁
     private static final Lock lock = new ReentrantLock();
 
