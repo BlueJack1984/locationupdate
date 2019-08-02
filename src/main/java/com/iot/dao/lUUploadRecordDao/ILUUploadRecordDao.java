@@ -14,5 +14,10 @@ public interface ILUUploadRecordDao {
      */
     int insert(@Param("luUploadRecord") LUUploadRecord luUploadRecord);
 
-
+    /**
+     *
+     * @param id
+     * @return
+     */
+    LUUploadRecord getById(@Param("id") Long id);
 }

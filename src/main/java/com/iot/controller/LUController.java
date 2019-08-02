@@ -2,7 +2,6 @@ package com.iot.controller;
 
 import com.iot.dao.assetBoundDao.IAssetBoundDao;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
-import com.iot.dao.lUUploadRecordDao.ILUUploadRecordDao;
 import com.iot.otaBean.assetBound.AssetBound;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.io.request.LUInput;
@@ -48,7 +47,7 @@ public class LUController {
     private final USSDPackService ussdBusiServicePack;
     private final IAssetManageBusiDao assetManageBusiDao;
     private final IAssetBoundDao assetBoundDao;
-    private final ILUUploadRecordDao luUploadRecordDao;
+    private final ILUUploadRecordService luUploadRecordService;
     //定义锁
     private static final Lock lock = new ReentrantLock();
 
@@ -57,7 +56,7 @@ public class LUController {
     public String LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
         //首先将LU位置上报信息存入记录表中
-
+        Long luUploadRecordId = luUploadRecordService.insert(luInput);
         log.info("LU服务接收到的lu实体信息：" + luInput);
         String uploadImsi = luInput.getImsi();
         String downMessage = "";
@@ -76,7 +75,7 @@ public class LUController {
                 if(null != assetSoftsimUsage && null != coverMcc
                         && coverMcc.contains(mcc) && uploadImsi.equals(imsi)) {
                     //把checksum置位A5A5下发副号信息
-                    return handleOrderAndAccessoryImsi(assetId, mcc);
+                    return handleOrderAndAccessoryImsi(assetId, mcc, luUploadRecordId);
                 }
             }
         }
@@ -101,6 +100,7 @@ public class LUController {
         AssetOrder assetOrder = getByIccids(iccidList, mcc);
         if(null == assetOrder) {
             log.info("查询到副号订单为空，不能下发副号");
+            luUploadRecordService.updateBusinessType(luUploadRecordId, 1);
             return null;
         }
         //组织数据下发副号,设置订单为预启用状态
@@ -108,6 +108,7 @@ public class LUController {
         String assetId = assetOrder.getAssetId();
         if(isBinding(assetId)) {
             log.info("设备已经进行机卡绑定，不能下发副号！");
+            luUploadRecordService.updateBusinessType(luUploadRecordId, 2);
             return null;
         }
         String orderId = assetOrder.getOrderId();
@@ -116,6 +117,7 @@ public class LUController {
         LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, assetId, mcc);
         if(null == luMtData) {
             log.info("LU服务下发副号失败");
+            luUploadRecordService.updateBusinessType(luUploadRecordId, 1);
             return null;
         }
         //生成记录
@@ -125,6 +127,8 @@ public class LUController {
         //包装
         downMessage = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
         log.info("LU下行消息：" + downMessage);
+        //将数据写入asset_mt_t记录表中
+
         return downMessage;
     }
 
@@ -134,13 +138,14 @@ public class LUController {
      * @param mcc
      * @return
      */
-    private String handleOrderAndAccessoryImsi(String assetId, String mcc) throws Exception{
+    private String handleOrderAndAccessoryImsi(String assetId, String mcc, Long luUploadRecordId) throws Exception{
         if(StringUtils.isEmpty(assetId) || StringUtils.isEmpty(mcc)) {
             log.info("传入的参数设备唯一标识assetId或者覆盖国家mcc为空");
             return null;
         }
         if(isBinding(assetId)) {
             log.info("设备已经进行机卡绑定，不能下发副号！");
+            luUploadRecordService.updateBusinessType(luUploadRecordId, 3);
             return null;
         }
         String downMessage = "";
@@ -151,11 +156,13 @@ public class LUController {
         LUMtData luMtData = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, assetId, mcc);
         if(null == luMtData) {
             log.info("LU服务下发副号失败: assetId:" + assetId + ", mcc:" + mcc);
+            luUploadRecordService.updateBusinessType(luUploadRecordId, 1);
             return null;
         }
         downMessage = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
         log.info("LU下行消息集合：" + downMessage);
-        //返回下发副号相关信息
+        //返回下发副号相关信息，存入表中
+
         return downMessage;
     }
 

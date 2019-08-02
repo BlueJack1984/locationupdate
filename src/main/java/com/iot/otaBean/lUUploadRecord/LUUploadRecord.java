@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -17,5 +18,21 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class LUUploadRecord implements Serializable {
 
-    private String id;
+    private Long id;
+
+    private Integer businessType;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    private String currentVLR;
+
+    private String imsi;
+
+    private String luTime;
+
+    private String mccMnc;
+
+    private String referenceId;
 }

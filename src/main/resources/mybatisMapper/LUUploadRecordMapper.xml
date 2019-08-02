@@ -3,17 +3,27 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iot.dao.lUUploadRecordDao.ILUUploadRecordDao">
-	<resultMap id="assetMtMap" type="AssetMt">
-	</resultMap>
+	<sql id="c_lu_upload_record">
+		_lu_upload_record.id, _lu_upload_record.business_type businessType,
+		_lu_upload_record.create_time createTime, _lu_upload_record.current_VLR currentVLR,
+		_lu_upload_record.imsi, _lu_upload_record.lu_time luTime,
+		_lu_upload_record.mcc_mnc mccMnc, _lu_upload_record.reference_id referenceId
+	</sql>
+	<sql id="t_lu_upload_record">
+		lu_upload_record
+	</sql>
 
-	<select id="insert" parameterType="assetMtMap" >
-		 select * from  asset_mt_t  where trade_id in
-		<foreach item="tradeNo"  collection="array" open="("
-			separator="," close=")">
-			#{tradeNo}
-		</foreach>
-		 <!-- group by sms_content --> 
-		order by mt_sms_id asc;
+	<insert id="insert" parameterType="com.iot.otaBean.lUUploadRecord.LUUploadRecord"
+			keyProperty="id" useGeneratedKeys="true">
+		insert into <include refid="t_lu_upload_record"/>
+		(business_type, create_time, current_VLR, imsi, lu_time, mcc_mnc, reference_id)
+		values(#{businessType}, #{createTime}, #{currentVLR}, #{imsi},
+		#{luTime}, #{mccMnc}, #{referenceId})
+	</insert>
+	<select id="getById" parameterType="java.lang.Long" resultType="com.iot.otaBean.lUUploadRecord.LUUploadRecord">
+		select <include refid="c_lu_upload_record"/>
+		from  <include refid="t_lu_upload_record"/> _lu_upload_record
+		where id = #{id}
 	</select>
 	
 	<update id="updateSendCount" >
