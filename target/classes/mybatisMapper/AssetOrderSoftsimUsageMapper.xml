@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.assetOrderSoftsimUsageDao.IAssetOrderSoftsimUsageDao">
+	<!--<resultMap id="AssetOrderSoftsimUsageMap" type="AssetOrderSoftsimUsage">-->
+	<!--</resultMap>-->
+	<select id="getList" resultType="com.iot.otaBean.assetOrderSoftsimUsage.AssetOrderSoftsimUsage" parameterType="String">
+		select * from asset_order_softsim_usage_t
+		where order_id= #{orderId} and asset_id= #{imei}
+		and (status = '1' or status = '0');
+	</select>
+	
+	<!--<select id="validateLocalIccid" resultMap="AssetOrderSoftsimUsageMap"-->
+		<!--parameterType="String">-->
+		<!--select * from asset_order_softsim_usage_t where order_id= #{orderId} and instr(cover_mcc,#{mcc})-->
+		 <!--and iccid = #{iccid}  and imsi = #{imsi}-->
+		  <!--and (status = '1' or status = '0') limit 1;-->
+	<!--</select>-->
+	<!--&lt;!&ndash; 检查是否是副号 &ndash;&gt;-->
+	<!--<select id="validateLocalImsi" resultMap="AssetOrderSoftsimUsageMap"-->
+		<!--parameterType="String">-->
+		<!--&lt;!&ndash; select * from asset_order_softsim_usage_t where asset_id= #{assetId} and imsi = #{imsi} and status = '1' limit 1; &ndash;&gt;-->
+		<!--select * from asset_order_softsim_usage_t where asset_id= #{assetId} and imsi = #{imsi} limit 1;-->
+	<!--</select>-->
+	<!--&lt;!&ndash; 检查副号是否已下发 &ndash;&gt;-->
+	<!--<select id="queryLocalImsi" resultMap="AssetOrderSoftsimUsageMap"-->
+		<!--parameterType="String">-->
+		<!--select * from asset_order_softsim_usage_t where asset_id= #{assetId} and imsi = #{imsi} and status = '1' limit 1;-->
+	<!--</select>-->
+	<!---->
+	<!--<update id="updateIsDownload" parameterType="String">-->
+		<!--update asset_order_softsim_usage_t set is_download = #{isDownload} where asset_id= #{assetId} and imsi = #{imsi} and order_id = #{orderId} ;-->
+	<!--</update>-->
+</mapper>    
+    
+  

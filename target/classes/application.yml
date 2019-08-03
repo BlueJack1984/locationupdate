@@ -1,0 +1,21 @@
+server:
+  port: 9005
+
+spring:
+  datasource:
+    url: jdbc:mysql://47.91.214.5/IotProductDB?zeroDateTimeBehavior=convertToNull
+    username: links
+    password: Imiany@2017$
+    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://39.104.166.109/iot_dev?zeroDateTimeBehavior=convertToNull
+#    username: iottest
+#    password: Links@2018$
+#    driver-class-name: com.mysql.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:mybatisMapper/*Mapper.xml
+  #type-aliases-package: com.ocean.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+#logging.config=D:\\testjar\\config\\logback.xml  指定加载文件
+#logging:
+#  config: \\usr\\local

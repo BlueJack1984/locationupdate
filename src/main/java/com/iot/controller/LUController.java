@@ -48,6 +48,7 @@ public class LUController {
     private final IAssetManageBusiDao assetManageBusiDao;
     private final IAssetBoundDao assetBoundDao;
     private final ILUUploadRecordService luUploadRecordService;
+    private final ILUDownMessageRecordService luDownMessageRecordService;
     //定义锁
     private static final Lock lock = new ReentrantLock();
 
@@ -83,6 +84,7 @@ public class LUController {
         List<AssetSoftsimUsage> assetSoftsimUsageList = assetSoftsimUsageService.getListByImsi(uploadImsi);
         if(null == assetSoftsimUsageList || assetSoftsimUsageList.size() < 1) {
             log.info("提示设备没有生产");
+            luUploadRecordService.updateBusinessType(luUploadRecordId, 1);
             return null;
         }
         //取出所有旅游卡iccid
@@ -128,7 +130,7 @@ public class LUController {
         downMessage = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
         log.info("LU下行消息：" + downMessage);
         //将数据写入asset_mt_t记录表中
-
+        luDownMessageRecordService.insert(luUploadRecordId, tradeNo, downMessage, assetId);
         return downMessage;
     }
 
@@ -162,7 +164,7 @@ public class LUController {
         downMessage = ussdBusiServicePack.ussdLUBusiServicePack(luMtData);
         log.info("LU下行消息集合：" + downMessage);
         //返回下发副号相关信息，存入表中
-
+        luDownMessageRecordService.insert(luUploadRecordId, tradeNo, downMessage, assetId);
         return downMessage;
     }
 

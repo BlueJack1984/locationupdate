@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.assetManageBusiDao.IAssetManageBusiDao">
+
+	<select id="queryUnfinishBusiByAssetIdAndType" resultType="com.iot.otaBean.assetManageBusi.AssetManageBusi">
+		 select * from asset_manage_busi_t where asset_id= #{assetId} and trade_type=#{busiType}
+		 and (`status`='1' or `status`='3' )
+		 order by  busi_code desc limit 1;
+	</select>
+
+	<select id="getOtaTradeNo" resultType="Long">
+		select
+		currval('seq_asset_ota_trade');
+	</select>
+<!--
+	<select id="getUnfinishTradeByConditions" resultMap="assetManageBusiMap">
+		select
+		* from asset_manage_busi_t where asset_id=#{0} and
+		trade_type=#{1} and (`status`='3') order by busi_code desc limit 1 ;
+	</select>
+
+	<select id="getTradeByOtaTradeCode" resultMap="assetManageBusiMap"
+		parameterType="String">
+		select * from asset_manage_busi_t where ota_trade_code=#{tradeCode} ;
+	</select>
+
+	<update id="updateDealCount" >
+		 update asset_manage_busi_t  set deal_count=deal_count+1  where ota_trade_code in
+		<foreach item="tradeCodes"  collection="array" open="("
+			separator="," close=")">
+			#{tradeCodes}
+		</foreach>
+	</update>
+	
+	<insert id="saveAssetManageBusi" useGeneratedKeys="true" parameterType="AssetManageBusi">
+		insert into asset_manage_busi_t (busi_code,asset_id,status,trade_type,create_time,manage_param) values
+(DATE_FORMAT(sysdate(),'%Y%m%d%H%i%s'),#{assetId},'1',#{tradeType},sysdate(),#{manageParam});
+	</insert>
+	<delete id="deleteAssetManageBusi">
+		delete from asset_manage_busi_t where asset_id = #{assetId} and trade_type = #{tradeType};
+	</delete>-->
+</mapper>    
+    
+  

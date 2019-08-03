@@ -21,7 +21,7 @@ public class LUDownMessageRecord implements Serializable {
 
     private Long uploadRecordId;
 
-    private String otaTradeNo;
+    private String tradeNo;
 
     private Date createTime;
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.IAssetSoftsimUsageDao.IAssetSoftsimUsageDao">
+	<!--<resultMap id="assetSoftsimUsageMap" type="assetSoftsimUsage">-->
+	<!--</resultMap>-->
+	<!--<select id="queryAssetSoftsimUsage" resultMap="assetSoftsimUsageMap"-->
+		<!--parameterType="String">-->
+		<!--select * from asset_softsim_usage_t where asset_id= #{assetId} and status = '1' limit 1;-->
+	<!--</select>-->
+	<!---->
+	<!--<select id="queryAllAssetSoftsimUsage" resultMap="assetSoftsimUsageMap"-->
+		<!--parameterType="String">-->
+		<!--select * from asset_softsim_usage_t where asset_id= #{assetId} and status = '1' and multi_imsi_flag = '0' and soft_sim_type = '2';-->
+	<!--</select>-->
+	<!--<update id="updateStatus" parameterType="String">-->
+		<!--update asset_softsim_usage_t set status = '2' where asset_id= #{assetId} and imsi &lt;&gt; #{imsi} and status = '1' and multi_imsi_flag = '0' and soft_sim_type = '2';-->
+	<!--</update>-->
+	<sql id="c_asset_softsim_usage_t">
+		_asset_softsim_usage_t.id, _asset_softsim_usage_t.asset_id assetId,
+		_asset_softsim_usage_t.iccid, _asset_softsim_usage_t.imsi,
+		_asset_softsim_usage_t.msisdn, _asset_softsim_usage_t.status,
+		_asset_softsim_usage_t.create_date createDate, _asset_softsim_usage_t.cover_mcc coverMcc,
+		_asset_softsim_usage_t.operator_code operatorCode, _asset_softsim_usage_t.operator_name operatorName,
+		_asset_softsim_usage_t.supplier_code supplierCode, _asset_softsim_usage_t.supplier_name supplierName,
+		_asset_softsim_usage_t.multi_imsi_flag multiImsiFlag, _asset_softsim_usage_t.soft_sim_type softSimType
+	</sql>
+	<sql id="t_asset_softsim_usage_t">
+		asset_softsim_usage_t
+	</sql>
+	<!-- 修改设备码号使用信息,种子号的废弃 、插入正式码号使用信息 -->
+	<update id="removeSeedIccidRecord">
+		UPDATE `asset_softsim_usage_t` SET `status` = '2'
+		WHERE  `asset_id` =#{deviceInitRec.imei} AND iccid=#{deviceInitRec.seedIccid}
+		AND `soft_sim_type` = '1'
+	</update>
+	<insert id="insertFormalIccidRecord">
+		INSERT INTO `asset_softsim_usage_t`(
+		`asset_id`,`iccid`,`imsi`,`status`,`create_date`,`cover_mcc`,`operator_code`,
+		`operator_name`,`supplier_code`,`supplier_name`,`multi_imsi_flag`,`soft_sim_type`
+		)VALUES(
+		#{deviceInitRec.imei},#{deviceInitRec.iccid},#{deviceInitRec.imsi},'1',date_format(NOW(), '%Y-%m-%d %H:%i:%s'),#{coverMcc},#{deviceInitRec.operatorCode},
+		#{deviceInitRec.operatorName},#{deviceInitRec.supplierCode},#{deviceInitRec.supplierName},#{moreImsiFlag},
+		'2')
+	</insert>
+
+	<select id="getListByImsi" parameterType="java.lang.String" resultType="com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage">
+		select <include refid="c_asset_softsim_usage_t"/>
+		from <include refid="t_asset_softsim_usage_t"/> _asset_softsim_usage_t
+		where imsi = #{imsi} and status = '1' and soft_sim_type = '2'
+	</select>
+	<select id="getByAssetId" parameterType="java.lang.String" resultType="com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage">
+		select <include refid="c_asset_softsim_usage_t"/>
+		from <include refid="t_asset_softsim_usage_t"/> _asset_softsim_usage_t
+		where asset_id = #{assetId} and status = '1' and soft_sim_type = '2'
+		limit 0,1
+	</select>
+</mapper>    
+    
+  

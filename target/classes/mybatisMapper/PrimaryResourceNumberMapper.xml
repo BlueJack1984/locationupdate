@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.primaryResourceNumberDao.IPrimaryResourceNumberDao">
+
+	<select id="queryByImsi" resultType="com.iot.otaBean.primaryResourceNumber.PrimaryResourceNumber"
+		parameterType="String">
+		select * from primary_resource_number_t where (imsi= #{imsi} or imsi2= #{imsi} or imsi3= #{imsi} or imsi4= #{imsi} or imsi5= #{imsi}) limit 1;
+	</select>
+	<select id="queryPrimaryByIccid" resultType="com.iot.otaBean.primaryResourceNumber.PrimaryResourceNumber"
+			parameterType="String">
+		select * from primary_resource_number_t where iccid=#{iccid};
+	</select>
+	
+</mapper>      

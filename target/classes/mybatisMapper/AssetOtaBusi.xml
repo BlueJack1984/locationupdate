@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.interf.IAssetOtaBusiDao">
+	<resultMap id="assetOtaBusiMap" type="AssetOtaBusi">
+	</resultMap>
+
+	<select id="getTradeByOtaTradeCode" resultMap="assetOtaBusiMap"
+		parameterType="String">
+		select * from asset_ota_busi_t where ota_trade_id=#{0};
+	</select>
+	
+	<select id="getAssetReDealTrade" resultMap="assetOtaBusiMap">
+		select * from
+		asset_ota_busi_t where trade_type=#{0} and <![CDATA[deal_count<#{1}
+		and start_excute_time<#{2}  ]]>
+		 and `status`='3' and channel_type = '1'
+		 <!-- and order_id in (select order_id from asset_info_t where package_type = '1') -->
+		  ;
+	</select>
+	
+	
+	<update id="updateDealCount" >
+		 update asset_ota_busi_t  set deal_count=deal_count+1  where ota_trade_id in
+		<foreach item="tradeNo"  collection="array" open="("
+			separator="," close=")">
+			#{tradeNo}
+		</foreach>
+	</update>
+</mapper>    
+    
+  

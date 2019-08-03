@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.interf.IAssetAbnormalBusiRecDao">
+	<insert id="saveAssetAbnormalBusiRec" useGeneratedKeys="true" keyProperty="recId"
+		parameterType="AssetAbnormalBusiRec">
+		insert into asset_abnormal_busi_rec_t
+		(asset_id,main_iccid,phone_num,rec_time,abnormal_type,abnormal_desc,channel_type)
+		values (#{assetId},#{mainIccid},#{phoneNum},sysdate(),
+		#{abnormalType},#{abnormalDesc},#{channelType})
+	</insert>
+</mapper>    
+    
+  

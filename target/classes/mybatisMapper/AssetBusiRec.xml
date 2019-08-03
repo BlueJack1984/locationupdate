@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.interf.IAssetBusiRecDao">
+	<insert id="saveAssetBusiRec" useGeneratedKeys="true" keyProperty="recId"
+		parameterType="AssetBusiRec">
+		insert into asset_busi_rec_t
+		(asset_id,phone_num,rec_time,order_code,rec_type,rec_desc)
+		values (#{assetId},#{phoneNum},sysdate(),#{orderCode},
+		#{recType},#{recDesc})
+	</insert>
+</mapper>    
+    
+  

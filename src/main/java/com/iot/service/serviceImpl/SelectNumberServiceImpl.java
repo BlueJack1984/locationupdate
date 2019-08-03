@@ -406,6 +406,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.info("assetOrder查询为空");
             return null;
         }
+        logger.info("订单信息：" + assetOrder);
         List<AssetOrderSoftsimUsage> orderSoftsimUsageList = assetOrderSoftsimUsageDao.getList(primaryIccid, assetOrder.getOrderId());
         if(null == orderSoftsimUsageList || orderSoftsimUsageList.size() < 1) {
             response = selectLocalSoftSim(assetOrder.getOrderId(), mcc);

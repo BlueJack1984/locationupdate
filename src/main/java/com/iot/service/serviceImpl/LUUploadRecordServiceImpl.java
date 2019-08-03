@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -72,5 +73,26 @@ public class LUUploadRecordServiceImpl implements ILUUploadRecordService {
         }
         LUUploadRecord luUploadRecord = luUploadRecordDao.getById(id);
         return luUploadRecord;
+    }
+    /**
+     * 根据查询列表数据
+     * @return 返回查询到的结果集合
+     */
+    @Override
+    public List<LUUploadRecord> getListOneDay(Date startTime, Date endTime) {
+        List<LUUploadRecord> luUploadRecordList = luUploadRecordDao.getListOneDay(startTime, endTime);
+        return luUploadRecordList;
+    }
+
+    /**
+     * 根据查询列表数据
+     * @param startTime
+     * @param endTime
+     * @return 返回查询到的结果集合
+     */
+    @Override
+    public List<LUUploadRecord> getListDownNULL(Date startTime, Date endTime) {
+
+        return null;
     }
 }

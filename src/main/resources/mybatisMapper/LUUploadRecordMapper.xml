@@ -26,13 +26,11 @@
 		where id = #{id}
 	</select>
 	
-	<update id="updateSendCount" >
-		 update asset_mt_t  set send_count=send_count+1  where trade_id in
-		<foreach item="tradeNo"  collection="array" open="("
-			separator="," close=")">
-			#{tradeNo}
-		</foreach>
-	</update>
+	<select id="getListOneDay" resultType="com.iot.otaBean.lUUploadRecord.LUUploadRecord">
+		select <include refid="c_lu_upload_record"/>
+		from <include refid="t_lu_upload_record"/> _lu_upload_record
+		where create_time &gt;= #{startTime} and create_time &lt;= #{endTime}
+	</select>
 	
 	<select id="queryRecentDevices" resultMap="assetMtMap" >
 		 select * from  asset_mt_t  where 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.mccBitMapDao.IMccBitMapDao">
+	<resultMap id="mccBitMapMap" type="com.iot.otaBean.mccBitMap.MccBitMap">
+	</resultMap>
+	<select id="getAllMccBitMap" resultMap="mccBitMapMap">
+		select * from mcc_bit_map_t;
+	</select>
+</mapper>    
+    
+  

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.proc.GetPrimaryDataProc">
+     <!-- 为DAO 接口方法提供SQL 语句配置 -->
+		<select id="getAssetPrimaryData" parameterMap="paramMap" statementType="CALLABLE">
+        	 CALL PROC_ASSETOTA_GET_PRIMARY_DATA(?,?,?)
+        </select>
+     <parameterMap type="java.util.Map" id="paramMap">
+        <parameter property="IN_NEW_PIMSI" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_ASSET_ID" mode="IN" jdbcType="VARCHAR"/>        
+        <parameter property="OUT_RESULT" mode="OUT" jdbcType="VARCHAR"/>
+    </parameterMap>
+		
+</mapper>    
+    
+  

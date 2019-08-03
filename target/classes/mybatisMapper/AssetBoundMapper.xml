@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.assetBoundDao.IAssetBoundDao">
+	<sql id="c_asset_bound_t">
+		_asset_bound_t.id, _asset_bound_t.asset_id assetId,
+		_asset_bound_t.imei, _asset_bound_t.update_time updateTime,
+		_asset_bound_t.bound_time boundTime
+	</sql>
+	<sql id="t_asset_bound_t">
+		asset_bound_t
+	</sql>
+	<select id="getList" resultType="com.iot.otaBean.assetBound.AssetBound" >
+		select <include refid="c_asset_bound_t"/>
+		from <include refid="t_asset_bound_t"/> _asset_bound_t
+	</select>
+</mapper>    
+    
+  

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.dao.deviceInitRecDao.IDeviceInitRecDao">
+
+	<select id="queryInitRecByDeviceId" resultType="com.iot.otaBean.deviceInitRec.DeviceInitRec">
+		select * from device_init_rec_t where imei=#{deviceId};
+		<!--select * from device_init_rec_t where imei=#{deviceId} and manuflag = #{manuflag};-->
+	</select>
+
+	<!--<update id="endRecord">-->
+		<!--&lt;!&ndash; 修改设备码号使用信息,种子号的废弃 、插入正式码号使用信息 &ndash;&gt;-->
+		<!--UPDATE `asset_softsim_usage_t` SET `status` = '2'-->
+		<!--WHERE  `asset_id` =#{deviceInitRec.imei} AND iccid=#{deviceInitRec.seedIccid}-->
+		<!--AND `soft_sim_type` = '1';-->
+
+		<!--INSERT INTO `asset_softsim_usage_t`(-->
+		<!--`asset_id`,`iccid`,`imsi`,`status`,`create_date`,`cover_mcc`,`operator_code`,-->
+		<!--`operator_name`,`supplier_code`,`supplier_name`,`multi_imsi_flag`,`soft_sim_type`-->
+		<!--)VALUES(-->
+		<!--#{deviceInitRec.imei},#{deviceInitRec.iccid},#{deviceInitRec.imsi},'1',date_format(NOW(), '%Y-%m-%d %H:%i:%s'),#{coverMcc},#{deviceInitRec.operatorCode},-->
+		<!--#{deviceInitRec.operatorName},#{deviceInitRec.supplierCode},#{deviceInitRec.supplierName},#{moreImsiFlag},-->
+		<!--'2');-->
+	<!--</update>-->
+</mapper>    
+    
+  

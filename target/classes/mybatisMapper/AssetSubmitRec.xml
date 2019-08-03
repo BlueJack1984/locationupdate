@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.interf.IAssetSubmitRecDao">
+	<resultMap id="softSimSubmitRecDaoMap" type="AssetSubmitRec">
+	</resultMap>
+	<insert id="saveSummit" useGeneratedKeys="true" keyProperty="recId"
+		parameterType="AssetSubmitRec">
+		insert into asset_submit_rec_t
+		(trade_id,submit_type,asset_id,phone_num,main_imsi,main_iccid,submit_content,
+		mcc,mnc,submit_date,normal_flag,operator_code,channel_type,imei)
+		values (#{tradeId},#{submitType},#{assetId},#{phoneNum},#{mainImsi},
+		#{mainIccid},#{submitContent},#{mcc},#{mnc},sysdate(),#{normalFlag},#{operatorCode},#{channelType},#{imei})
+	</insert>
+	
+	<select id="queryPor" resultMap="softSimSubmitRecDaoMap" >
+		 select * from  asset_submit_rec_t  where 
+		 submit_date &lt; #{endTime} and submit_date &gt; #{startTime} and submit_type = '01' and channel_type = '1' and
+		 imei =  #{imei} limit 1;
+	</select>
+	
+	<select id="queryPors" resultMap="softSimSubmitRecDaoMap" >
+		 select * from  asset_submit_rec_t  where 
+		 submit_date &lt; #{endTime} and submit_date &gt; #{startTime} and submit_type = '01' and channel_type = '1' and
+		 instr(#{imeis},imei) order by submit_date desc;
+	</select>
+</mapper>    
+    
+  

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.interf.IInnerSysCommLogDao">
+	<insert id="save" useGeneratedKeys="true" keyProperty="recId"
+		parameterType="InnerSysCommLog">
+		insert into inner_sys_comm_log_t
+		(busi_id,busi_type,source_sys,dest_sys,busi_req_msg,trigger_type,busi_begin_time)values
+		(#{busiId},#{busiType},#{sourceSys},#{destSys},#{busiReqMsg},#{triggerType},sysdate())
+	</insert>
+	
+	<update id="updateResult" >
+		 update inner_sys_comm_log_t  set busi_result_code=#{1},
+		 busi_result_desc = #{2},busi_resp_msg= #{3},busi_finish_time = sysdate()  where busi_id = #{0};
+	</update>
+</mapper>    
+    
+  

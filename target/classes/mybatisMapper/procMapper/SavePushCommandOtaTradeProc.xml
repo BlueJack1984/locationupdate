@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iot.ota.dao.proc.SavePushCommandOtaTradeProc">
+     <!-- 为DAO 接口方法提供SQL 语句配置 -->
+		<select id="savePushCommandOtaTrade" parameterMap="paramMap" statementType="CALLABLE">
+        	 CALL PROC_ASSETOTA_SAVE_PUSHCOMMAND_OTATRADE(?,?,?,?,?,?,?,?,?,?,?,?,?)
+        </select>
+     <parameterMap type="java.util.Map" id="paramMap">
+        <parameter property="IN_TRADE_ID" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_P_ICCID" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_MSISDN" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_ASSET_ID" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_MT_SMS" mode="IN" jdbcType="VARCHAR"/>
+        
+        
+        <parameter property="IN_OPERATOR_CODE" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_SUPPLIER_CODE" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_QUEUE" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_BUSICODE" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_CHANNEL_TYPE" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_IMEI" mode="IN" jdbcType="VARCHAR"/>
+        <parameter property="IN_TRADE_TYPE" mode="IN" jdbcType="VARCHAR"/>
+        
+        <parameter property="OUT_RESULT" mode="OUT" jdbcType="VARCHAR"/>
+    </parameterMap>
+		
+</mapper>    
+    
+  
